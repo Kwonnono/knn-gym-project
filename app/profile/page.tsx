@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { saveGoalAction } from '@/app/actions';
 
 const inputClass =
-  'mt-1 w-full rounded border border-neutral-300 bg-white px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900';
+  'mt-1 w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 transition-colors focus:border-neutral-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:focus:border-neutral-500';
 
 export default async function ProfilePage({
   searchParams
@@ -25,7 +25,7 @@ export default async function ProfilePage({
       <p className="text-sm text-neutral-500 dark:text-neutral-400">
         신체 정보와 목표를 입력하면 일일 칼로리 및 탄단지 목표치를 자동 계산합니다.
       </p>
-      {error && <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
+      {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
       <form action={saveGoalAction} className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <label className="text-sm">
@@ -73,7 +73,7 @@ export default async function ProfilePage({
         </label>
         <button
           type="submit"
-          className="w-full rounded bg-black px-3 py-2 font-medium text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+          className="w-full rounded-lg bg-black px-3 py-2 font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
         >
           목표 계산하기
         </button>

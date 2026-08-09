@@ -19,7 +19,7 @@ const CATEGORIES: { value: string; label: string }[] = [
 ];
 
 const inputClass =
-  'rounded border border-neutral-300 bg-white px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900';
+  'rounded-lg border border-neutral-300 bg-white px-3 py-2 transition-colors focus:border-neutral-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:focus:border-neutral-500';
 
 export default async function WorkoutPage({
   searchParams
@@ -55,8 +55,8 @@ export default async function WorkoutPage({
             href={`/workout?category=${c.value}`}
             className={
               c.value === category
-                ? 'rounded-full bg-black px-3 py-1.5 text-sm font-medium text-white dark:bg-white dark:text-black'
-                : 'rounded-full border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-900'
+                ? 'rounded-full bg-black px-3 py-1.5 text-sm font-medium text-white shadow-sm dark:bg-white dark:text-black'
+                : 'rounded-full border border-neutral-300 px-3 py-1.5 text-sm transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-900'
             }
           >
             {c.label}
@@ -64,11 +64,11 @@ export default async function WorkoutPage({
         ))}
       </div>
 
-      {error && <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
+      {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
 
       <form
         action={addWorkoutLogAction}
-        className="grid grid-cols-3 gap-3 rounded border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-950"
+        className="grid grid-cols-3 gap-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-950"
       >
         <input type="hidden" name="category" value={category} />
         <input name="exercise" placeholder="운동 이름" required className={`col-span-3 ${inputClass}`} />
@@ -86,13 +86,13 @@ export default async function WorkoutPage({
         )}
         <button
           type="submit"
-          className="col-span-3 rounded bg-black px-3 py-2 font-medium text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+          className="col-span-3 rounded-lg bg-black px-3 py-2 font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
         >
           추가하기
         </button>
       </form>
 
-      <div className="overflow-x-auto rounded border border-neutral-200 dark:border-neutral-800">
+      <div className="overflow-x-auto rounded-xl border border-neutral-200 shadow-sm dark:border-neutral-800">
         <table className="w-full text-sm">
           <thead className="bg-neutral-50 text-left text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
             {isCardio ? (

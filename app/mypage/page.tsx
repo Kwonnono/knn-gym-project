@@ -26,7 +26,7 @@ export default async function MyPage() {
         <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{displayName}님</p>
       </div>
 
-      <section className="rounded border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-950">
+      <section className="rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
         <h2 className="font-display text-lg tracking-wide">계정 정보</h2>
         <dl className="mt-2 space-y-1 text-sm">
           <div className="flex justify-between">
@@ -43,7 +43,7 @@ export default async function MyPage() {
         </a>
       </section>
 
-      <section className="rounded border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-950">
+      <section className="rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
         <h2 className="font-display text-lg tracking-wide">현재 목표</h2>
         {goal ? (
           <>

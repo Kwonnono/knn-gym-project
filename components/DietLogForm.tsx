@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import { addDietLogAction, estimateNutritionAction } from '@/app/actions';
 
 const inputClass =
-  'rounded border border-neutral-300 bg-white px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900';
+  'rounded-lg border border-neutral-300 bg-white px-3 py-2 transition-colors focus:border-neutral-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:focus:border-neutral-500';
 
 export function DietLogForm() {
   const [mealName, setMealName] = useState('');
@@ -34,7 +34,7 @@ export function DietLogForm() {
   return (
     <form
       action={addDietLogAction}
-      className="grid grid-cols-2 gap-3 rounded border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-950"
+      className="grid grid-cols-2 gap-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-950"
     >
       <input
         name="mealName"
@@ -56,7 +56,7 @@ export function DietLogForm() {
           type="button"
           onClick={handleAiCalc}
           disabled={isPending || !mealName || !grams}
-          className="whitespace-nowrap rounded border border-neutral-300 px-3 py-2 text-sm font-medium hover:bg-neutral-100 disabled:opacity-50 dark:border-neutral-700 dark:hover:bg-neutral-900"
+          className="whitespace-nowrap rounded-lg border border-neutral-300 px-3 py-2 text-sm font-medium transition-colors hover:bg-neutral-100 disabled:opacity-50 dark:border-neutral-700 dark:hover:bg-neutral-900"
         >
           {isPending ? '계산 중...' : 'AI로 계산하기'}
         </button>
@@ -97,7 +97,7 @@ export function DietLogForm() {
       />
       <button
         type="submit"
-        className="col-span-2 rounded bg-black px-3 py-2 font-medium text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+        className="col-span-2 rounded-lg bg-black px-3 py-2 font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
       >
         추가하기
       </button>

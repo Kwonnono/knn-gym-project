@@ -19,8 +19,8 @@ function Stat({ label, value, target, unit }: { label: string; value: number; ta
           {value}{unit} / {target}{unit}
         </span>
       </div>
-      <div className="mt-1 h-2 rounded bg-neutral-200 dark:bg-neutral-800">
-        <div className="h-2 rounded bg-black dark:bg-white" style={{ width: `${pct}%` }} />
+      <div className="mt-1 h-2 rounded-full bg-neutral-200 dark:bg-neutral-800">
+        <div className="h-2 rounded-full bg-black dark:bg-white" style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
@@ -30,7 +30,7 @@ function NavCard({ href, icon, title, description }: { href: string; icon: React
   return (
     <a
       href={href}
-      className="rounded border border-neutral-200 bg-white p-4 hover:border-neutral-400 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-600"
+      className="rounded-xl border border-neutral-200 bg-white p-4 shadow-sm transition-colors hover:border-neutral-300 hover:shadow dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700"
     >
       <div className="text-neutral-700 dark:text-neutral-300">{icon}</div>
       <p className="mt-2 font-medium">{title}</p>
@@ -107,7 +107,7 @@ export default async function DashboardPage() {
         <NavCard href="/workout" icon={<DumbbellIcon />} title="운동 기록" description="부위별 운동 기록하기" />
       </div>
 
-      <div className="space-y-4 rounded border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-950">
+      <div className="space-y-4 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
         <h2 className="font-display text-xl tracking-wide">오늘 섭취</h2>
         <Stat label="칼로리" value={consumed.calories} target={goal.target_calories} unit="kcal" />
         <Stat label="단백질" value={consumed.proteinG} target={goal.target_protein_g} unit="g" />
@@ -120,7 +120,7 @@ export default async function DashboardPage() {
           <h2 className="font-display text-xl tracking-wide">오늘 식단 기록</h2>
           <a href="/diet" className="text-sm underline">전체보기</a>
         </div>
-        <div className="overflow-x-auto rounded border border-neutral-200 dark:border-neutral-800">
+        <div className="overflow-x-auto rounded-xl border border-neutral-200 shadow-sm dark:border-neutral-800">
           <table className="w-full text-sm">
             <thead className="bg-neutral-50 text-left text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
               <tr>
@@ -154,7 +154,7 @@ export default async function DashboardPage() {
           <h2 className="font-display text-xl tracking-wide">오늘 운동 기록</h2>
           <a href="/workout" className="text-sm underline">전체보기</a>
         </div>
-        <div className="overflow-x-auto rounded border border-neutral-200 dark:border-neutral-800">
+        <div className="overflow-x-auto rounded-xl border border-neutral-200 shadow-sm dark:border-neutral-800">
           <table className="w-full text-sm">
             <thead className="bg-neutral-50 text-left text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
               <tr>

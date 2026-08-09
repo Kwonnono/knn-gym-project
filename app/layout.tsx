@@ -51,23 +51,23 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <nav className="flex items-center gap-4 text-sm">
             {user ? (
               <>
-                <a href="/dashboard" title="홈" aria-label="홈" className="text-neutral-600 hover:text-black dark:text-neutral-400 dark:hover:text-white">
+                <a href="/dashboard" title="홈" aria-label="홈" className="rounded-lg p-1.5 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white">
                   <HomeIcon />
                 </a>
-                <a href="/profile" title="목표 설정" aria-label="목표 설정" className="text-neutral-600 hover:text-black dark:text-neutral-400 dark:hover:text-white">
+                <a href="/profile" title="목표 설정" aria-label="목표 설정" className="rounded-lg p-1.5 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white">
                   <TargetIcon />
                 </a>
-                <a href="/diet" title="식단 기록" aria-label="식단 기록" className="text-neutral-600 hover:text-black dark:text-neutral-400 dark:hover:text-white">
+                <a href="/diet" title="식단 기록" aria-label="식단 기록" className="rounded-lg p-1.5 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white">
                   <UtensilsIcon />
                 </a>
-                <a href="/workout" title="운동 기록" aria-label="운동 기록" className="text-neutral-600 hover:text-black dark:text-neutral-400 dark:hover:text-white">
+                <a href="/workout" title="운동 기록" aria-label="운동 기록" className="rounded-lg p-1.5 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white">
                   <DumbbellIcon />
                 </a>
                 <span className="h-5 w-px bg-neutral-200 dark:bg-neutral-800" />
-                <a href="/mypage" title={`마이페이지 (${displayName})`} aria-label="마이페이지" className="text-neutral-600 hover:text-black dark:text-neutral-400 dark:hover:text-white">
+                <a href="/mypage" title={`마이페이지 (${displayName})`} aria-label="마이페이지" className="rounded-lg p-1.5 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white">
                   <UserIcon />
                 </a>
-                <a href="/settings" title="설정" aria-label="설정" className="text-neutral-600 hover:text-black dark:text-neutral-400 dark:hover:text-white">
+                <a href="/settings" title="설정" aria-label="설정" className="rounded-lg p-1.5 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white">
                   <SettingsIcon />
                 </a>
                 <form action={logoutAction}>
@@ -79,7 +79,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <a href="/login" className="hover:underline">로그인</a>
                 <a
                   href="/signup"
-                  className="rounded bg-black px-3 py-1.5 text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+                  className="rounded-lg bg-black px-3 py-1.5 text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
                 >
                   회원가입
                 </a>

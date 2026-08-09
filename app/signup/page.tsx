@@ -1,7 +1,7 @@
 import { signupAction } from '@/app/actions';
 
 const inputClass =
-  'w-full rounded border border-neutral-300 bg-white px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900';
+  'w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 transition-colors focus:border-neutral-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:focus:border-neutral-500';
 
 export default async function SignupPage({
   searchParams
@@ -13,7 +13,7 @@ export default async function SignupPage({
   return (
     <div className="mx-auto max-w-sm space-y-5">
       <h1 className="font-display text-3xl tracking-wide">회원가입</h1>
-      {error && <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
+      {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
       <form action={signupAction} className="space-y-3">
         <input name="name" placeholder="이름 또는 닉네임" required className={inputClass} />
         <input name="email" type="email" placeholder="이메일" required className={inputClass} />
@@ -33,7 +33,7 @@ export default async function SignupPage({
         </div>
         <button
           type="submit"
-          className="w-full rounded bg-black px-3 py-2 font-medium text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+          className="w-full rounded-lg bg-black px-3 py-2 font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
         >
           가입하기
         </button>

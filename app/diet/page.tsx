@@ -31,11 +31,11 @@ export default async function DietPage({
     <div className="space-y-6">
       <h1 className="font-display text-3xl tracking-wide">오늘의 식단 기록</h1>
 
-      {error && <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
+      {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
 
       <DietLogForm />
 
-      <div className="overflow-x-auto rounded border border-neutral-200 dark:border-neutral-800">
+      <div className="overflow-x-auto rounded-xl border border-neutral-200 shadow-sm dark:border-neutral-800">
         <table className="w-full text-sm">
           <thead className="bg-neutral-50 text-left text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
             <tr>

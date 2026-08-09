@@ -17,13 +17,13 @@ export default async function HomePage() {
       <div className="flex gap-3">
         <a
           href="/signup"
-          className="rounded bg-black px-5 py-2.5 font-medium text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+          className="rounded-lg bg-black px-5 py-2.5 font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
         >
           무료로 회원가입
         </a>
         <a
           href="/login"
-          className="rounded border border-neutral-300 px-5 py-2.5 font-medium hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-900"
+          className="rounded-lg border border-neutral-300 px-5 py-2.5 font-medium transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-900"
         >
           로그인
         </a>
