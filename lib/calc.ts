@@ -1,6 +1,6 @@
 export type Sex = 'male' | 'female';
 export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
-export type GoalType = 'cutting' | 'bulking' | 'maintenance';
+export type GoalType = 'cutting' | 'bulking' | 'maintenance' | 'mini_cut' | 'mini_bulk';
 
 const ACTIVITY_MULTIPLIER: Record<ActivityLevel, number> = {
   sedentary: 1.2,
@@ -10,10 +10,13 @@ const ACTIVITY_MULTIPLIER: Record<ActivityLevel, number> = {
   very_active: 1.9
 };
 
+// 미니컷/미니벌크는 2~4주 단기간에 걸쳐 더 공격적으로 밀어붙이는 변형입니다.
 const GOAL_CALORIE_ADJUSTMENT: Record<GoalType, number> = {
   cutting: -400,
   bulking: 300,
-  maintenance: 0
+  maintenance: 0,
+  mini_cut: -650,
+  mini_bulk: 500
 };
 
 const PROTEIN_G_PER_KG = 2.0;

@@ -1,5 +1,8 @@
 import { loginAction } from '@/app/actions';
 
+const inputClass =
+  'w-full rounded border border-neutral-300 bg-white px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900';
+
 export default async function LoginPage({
   searchParams
 }: {
@@ -8,18 +11,25 @@ export default async function LoginPage({
   const { error, message } = await searchParams;
 
   return (
-    <div className="mx-auto max-w-sm space-y-4">
-      <h1 className="text-xl font-bold">로그인</h1>
-      {message && <p className="rounded bg-blue-50 px-3 py-2 text-sm text-blue-700">{message}</p>}
-      {error && <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+    <div className="mx-auto max-w-sm space-y-5">
+      <h1 className="font-display text-3xl tracking-wide">로그인</h1>
+      {message && (
+        <p className="rounded border border-neutral-300 bg-neutral-50 px-3 py-2 text-sm dark:border-neutral-700 dark:bg-neutral-900">
+          {message}
+        </p>
+      )}
+      {error && <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
       <form action={loginAction} className="space-y-3">
-        <input name="email" type="email" placeholder="이메일" required className="w-full rounded border border-neutral-300 px-3 py-2" />
-        <input name="password" type="password" placeholder="비밀번호" required className="w-full rounded border border-neutral-300 px-3 py-2" />
-        <button type="submit" className="w-full rounded bg-neutral-900 px-3 py-2 text-white hover:bg-neutral-700">
+        <input name="email" type="email" placeholder="이메일" required className={inputClass} />
+        <input name="password" type="password" placeholder="비밀번호" required className={inputClass} />
+        <button
+          type="submit"
+          className="w-full rounded bg-black px-3 py-2 font-medium text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+        >
           로그인
         </button>
       </form>
-      <p className="text-sm text-neutral-500">
+      <p className="text-sm text-neutral-500 dark:text-neutral-400">
         계정이 없으신가요? <a href="/signup" className="underline">회원가입</a>
       </p>
     </div>

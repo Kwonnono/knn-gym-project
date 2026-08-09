@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { addDietLogAction } from '@/app/actions';
+import { DietLogForm } from '@/components/DietLogForm';
 
 function startOfToday(): string {
   const d = new Date();
@@ -29,31 +29,42 @@ export default async function DietPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-bold">오늘의 식단 기록</h1>
+      <h1 className="font-display text-3xl tracking-wide">오늘의 식단 기록</h1>
 
-      {error && <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+      {error && <p className="rounded bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
 
-      <form action={addDietLogAction} className="grid grid-cols-2 gap-3 rounded border border-neutral-200 bg-white p-4">
-        <input name="mealName" placeholder="음식 이름" required className="col-span-2 rounded border border-neutral-300 px-3 py-2" />
-        <input name="calories" type="number" placeholder="칼로리 (kcal)" required className="rounded border border-neutral-300 px-3 py-2" />
-        <input name="proteinG" type="number" placeholder="단백질 (g)" className="rounded border border-neutral-300 px-3 py-2" />
-        <input name="carbG" type="number" placeholder="탄수화물 (g)" className="rounded border border-neutral-300 px-3 py-2" />
-        <input name="fatG" type="number" placeholder="지방 (g)" className="rounded border border-neutral-300 px-3 py-2" />
-        <button type="submit" className="col-span-2 rounded bg-neutral-900 px-3 py-2 text-white hover:bg-neutral-700">
-          추가하기
-        </button>
-      </form>
+      <DietLogForm />
 
-      <div className="space-y-2">
-        {(!logs || logs.length === 0) && <p className="text-sm text-neutral-500">오늘 기록된 식단이 없습니다.</p>}
-        {(logs ?? []).map((log) => (
-          <div key={log.id} className="flex justify-between rounded border border-neutral-200 bg-white px-4 py-3 text-sm">
-            <span className="font-medium">{log.meal_name}</span>
-            <span className="text-neutral-500">
-              {log.calories}kcal · 단 {log.protein_g}g · 탄 {log.carb_g}g · 지 {log.fat_g}g
-            </span>
-          </div>
-        ))}
+      <div className="overflow-x-auto rounded border border-neutral-200 dark:border-neutral-800">
+        <table className="w-full text-sm">
+          <thead className="bg-neutral-50 text-left text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
+            <tr>
+              <th className="px-4 py-2 font-medium">음식</th>
+              <th className="px-4 py-2 font-medium">칼로리</th>
+              <th className="px-4 py-2 font-medium">단백질</th>
+              <th className="px-4 py-2 font-medium">탄수화물</th>
+              <th className="px-4 py-2 font-medium">지방</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(!logs || logs.length === 0) && (
+              <tr>
+                <td colSpan={5} className="px-4 py-6 text-center text-neutral-500 dark:text-neutral-400">
+                  오늘 기록된 식단이 없습니다.
+                </td>
+              </tr>
+            )}
+            {(logs ?? []).map((log) => (
+              <tr key={log.id} className="border-t border-neutral-100 dark:border-neutral-900">
+                <td className="px-4 py-2 font-medium">{log.meal_name}</td>
+                <td className="px-4 py-2">{log.calories}kcal</td>
+                <td className="px-4 py-2">{log.protein_g}g</td>
+                <td className="px-4 py-2">{log.carb_g}g</td>
+                <td className="px-4 py-2">{log.fat_g}g</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
