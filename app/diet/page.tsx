@@ -1,12 +1,11 @@
 import { redirect } from 'next/navigation';
-import { getCurrentUserId } from '@/lib/session';
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
 import { addDietLogAction } from '@/app/actions';
 
-function startOfToday(): Date {
+function startOfToday(): string {
   const d = new Date();
   d.setHours(0, 0, 0, 0);
-  return d;
+  return d.toISOString();
 }
 
 export default async function DietPage({
@@ -14,14 +13,19 @@ export default async function DietPage({
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
-  const userId = await getCurrentUserId();
-  if (!userId) redirect('/login');
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
 
   const { error } = await searchParams;
-  const logs = await prisma.dietLog.findMany({
-    where: { userId, date: { gte: startOfToday() } },
-    orderBy: { createdAt: 'desc' }
-  });
+  const { data: logs } = await supabase
+    .from('diet_logs')
+    .select('*')
+    .eq('user_id', user.id)
+    .gte('date', startOfToday())
+    .order('created_at', { ascending: false });
 
   return (
     <div className="space-y-6">
@@ -41,12 +45,12 @@ export default async function DietPage({
       </form>
 
       <div className="space-y-2">
-        {logs.length === 0 && <p className="text-sm text-neutral-500">오늘 기록된 식단이 없습니다.</p>}
-        {logs.map((log) => (
+        {(!logs || logs.length === 0) && <p className="text-sm text-neutral-500">오늘 기록된 식단이 없습니다.</p>}
+        {(logs ?? []).map((log) => (
           <div key={log.id} className="flex justify-between rounded border border-neutral-200 bg-white px-4 py-3 text-sm">
-            <span className="font-medium">{log.mealName}</span>
+            <span className="font-medium">{log.meal_name}</span>
             <span className="text-neutral-500">
-              {log.calories}kcal · 단 {log.proteinG}g · 탄 {log.carbG}g · 지 {log.fatG}g
+              {log.calories}kcal · 단 {log.protein_g}g · 탄 {log.carb_g}g · 지 {log.fat_g}g
             </span>
           </div>
         ))}

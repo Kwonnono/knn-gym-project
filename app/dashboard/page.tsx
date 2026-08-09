@@ -1,11 +1,10 @@
 import { redirect } from 'next/navigation';
-import { getCurrentUserId } from '@/lib/session';
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
 
-function startOfToday(): Date {
+function startOfToday(): string {
   const d = new Date();
   d.setHours(0, 0, 0, 0);
-  return d;
+  return d.toISOString();
 }
 
 function Stat({ label, value, target, unit }: { label: string; value: number; target: number; unit: string }) {
@@ -26,30 +25,40 @@ function Stat({ label, value, target, unit }: { label: string; value: number; ta
 }
 
 export default async function DashboardPage() {
-  const userId = await getCurrentUserId();
-  if (!userId) redirect('/login');
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
 
-  const goal = await prisma.goal.findUnique({ where: { userId } });
+  const { data: goal } = await supabase.from('goals').select('*').eq('user_id', user.id).maybeSingle();
   if (!goal) redirect('/profile');
 
-  const todayLogs = await prisma.dietLog.findMany({
-    where: { userId, date: { gte: startOfToday() } }
-  });
-  const todayWorkouts = await prisma.workoutLog.count({
-    where: { userId, date: { gte: startOfToday() } }
-  });
+  const todayStart = startOfToday();
 
-  const consumed = todayLogs.reduce(
+  const { data: todayLogs } = await supabase
+    .from('diet_logs')
+    .select('calories, protein_g, carb_g, fat_g')
+    .eq('user_id', user.id)
+    .gte('date', todayStart);
+
+  const { count: todayWorkouts } = await supabase
+    .from('workout_logs')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', user.id)
+    .gte('date', todayStart);
+
+  const consumed = (todayLogs ?? []).reduce(
     (acc, log) => ({
       calories: acc.calories + log.calories,
-      proteinG: acc.proteinG + log.proteinG,
-      carbG: acc.carbG + log.carbG,
-      fatG: acc.fatG + log.fatG
+      proteinG: acc.proteinG + log.protein_g,
+      carbG: acc.carbG + log.carb_g,
+      fatG: acc.fatG + log.fat_g
     }),
     { calories: 0, proteinG: 0, carbG: 0, fatG: 0 }
   );
 
-  const goalLabel = { cutting: '커팅', bulking: '벌크업', maintenance: '유지' }[goal.goalType] ?? goal.goalType;
+  const goalLabel = { cutting: '커팅', bulking: '벌크업', maintenance: '유지' }[goal.goal_type as string] ?? goal.goal_type;
 
   return (
     <div className="space-y-6">
@@ -60,21 +69,21 @@ export default async function DashboardPage() {
 
       <div className="rounded border border-neutral-200 bg-white p-4 text-sm text-neutral-600">
         <p>현재 목표: <span className="font-medium text-neutral-900">{goalLabel}</span></p>
-        <p>BMR {goal.bmr}kcal · TDEE {goal.tdee}kcal · 목표 칼로리 {goal.targetCalories}kcal</p>
+        <p>BMR {goal.bmr}kcal · TDEE {goal.tdee}kcal · 목표 칼로리 {goal.target_calories}kcal</p>
       </div>
 
       <div className="space-y-4 rounded border border-neutral-200 bg-white p-4">
         <h2 className="font-semibold">오늘 섭취</h2>
-        <Stat label="칼로리" value={consumed.calories} target={goal.targetCalories} unit="kcal" />
-        <Stat label="단백질" value={consumed.proteinG} target={goal.targetProteinG} unit="g" />
-        <Stat label="탄수화물" value={consumed.carbG} target={goal.targetCarbG} unit="g" />
-        <Stat label="지방" value={consumed.fatG} target={goal.targetFatG} unit="g" />
+        <Stat label="칼로리" value={consumed.calories} target={goal.target_calories} unit="kcal" />
+        <Stat label="단백질" value={consumed.proteinG} target={goal.target_protein_g} unit="g" />
+        <Stat label="탄수화물" value={consumed.carbG} target={goal.target_carb_g} unit="g" />
+        <Stat label="지방" value={consumed.fatG} target={goal.target_fat_g} unit="g" />
         <a href="/diet" className="inline-block text-sm underline">식단 기록하러 가기</a>
       </div>
 
       <div className="rounded border border-neutral-200 bg-white p-4">
         <h2 className="font-semibold">오늘 운동</h2>
-        <p className="mt-1 text-sm text-neutral-600">{todayWorkouts}개 세트 그룹 기록됨</p>
+        <p className="mt-1 text-sm text-neutral-600">{todayWorkouts ?? 0}개 세트 그룹 기록됨</p>
         <a href="/workout" className="mt-2 inline-block text-sm underline">운동 기록하러 가기</a>
       </div>
     </div>

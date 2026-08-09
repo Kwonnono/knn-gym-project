@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getCurrentUserId } from '@/lib/session';
-import { prisma } from '@/lib/prisma';
+import { createClient } from '@/lib/supabase/server';
 import { saveGoalAction } from '@/app/actions';
 
 export default async function ProfilePage({
@@ -8,11 +7,14 @@ export default async function ProfilePage({
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
-  const userId = await getCurrentUserId();
-  if (!userId) redirect('/login');
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
 
   const { error } = await searchParams;
-  const goal = await prisma.goal.findUnique({ where: { userId } });
+  const { data: goal } = await supabase.from('goals').select('*').eq('user_id', user.id).maybeSingle();
 
   return (
     <div className="mx-auto max-w-md space-y-4">
@@ -25,11 +27,11 @@ export default async function ProfilePage({
         <div className="grid grid-cols-2 gap-3">
           <label className="text-sm">
             키 (cm)
-            <input name="heightCm" type="number" step="0.1" required defaultValue={goal?.heightCm} className="mt-1 w-full rounded border border-neutral-300 px-3 py-2" />
+            <input name="heightCm" type="number" step="0.1" required defaultValue={goal?.height_cm} className="mt-1 w-full rounded border border-neutral-300 px-3 py-2" />
           </label>
           <label className="text-sm">
             몸무게 (kg)
-            <input name="weightKg" type="number" step="0.1" required defaultValue={goal?.weightKg} className="mt-1 w-full rounded border border-neutral-300 px-3 py-2" />
+            <input name="weightKg" type="number" step="0.1" required defaultValue={goal?.weight_kg} className="mt-1 w-full rounded border border-neutral-300 px-3 py-2" />
           </label>
           <label className="text-sm">
             나이
@@ -46,7 +48,7 @@ export default async function ProfilePage({
         </div>
         <label className="block text-sm">
           활동량
-          <select name="activityLevel" required defaultValue={goal?.activityLevel ?? ''} className="mt-1 w-full rounded border border-neutral-300 px-3 py-2">
+          <select name="activityLevel" required defaultValue={goal?.activity_level ?? ''} className="mt-1 w-full rounded border border-neutral-300 px-3 py-2">
             <option value="" disabled>선택</option>
             <option value="sedentary">거의 안 움직임 (사무직, 운동 안 함)</option>
             <option value="light">가벼운 활동 (주 1-3회 운동)</option>
@@ -57,7 +59,7 @@ export default async function ProfilePage({
         </label>
         <label className="block text-sm">
           목표
-          <select name="goalType" required defaultValue={goal?.goalType ?? ''} className="mt-1 w-full rounded border border-neutral-300 px-3 py-2">
+          <select name="goalType" required defaultValue={goal?.goal_type ?? ''} className="mt-1 w-full rounded border border-neutral-300 px-3 py-2">
             <option value="" disabled>선택</option>
             <option value="cutting">커팅 (체지방 감량)</option>
             <option value="bulking">벌크업 (근육량 증가)</option>

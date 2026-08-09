@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getCurrentUser } from '@/lib/session';
+import { getCurrentUser } from '@/lib/supabase/server';
 import { logoutAction } from '@/app/actions';
 import './globals.css';
 
@@ -23,7 +23,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <a href="/profile" className="hover:underline">목표 설정</a>
                 <a href="/diet" className="hover:underline">식단 기록</a>
                 <a href="/workout" className="hover:underline">운동 기록</a>
-                <span className="text-neutral-500">{user.name}님</span>
+                <span className="text-neutral-500">{(user.user_metadata?.name as string | undefined) ?? user.email}님</span>
                 <form action={logoutAction}>
                   <button type="submit" className="text-neutral-500 hover:underline">로그아웃</button>
                 </form>

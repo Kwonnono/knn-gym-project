@@ -1,10 +1,8 @@
 'use server';
 
-import bcrypt from 'bcryptjs';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { prisma } from '@/lib/prisma';
-import { setSessionCookie, clearSessionCookie, getCurrentUserId } from '@/lib/session';
+import { createClient } from '@/lib/supabase/server';
 import { calculateTargets, type ActivityLevel, type GoalType, type Sex } from '@/lib/calc';
 
 export async function signupAction(formData: FormData): Promise<void> {
@@ -19,14 +17,21 @@ export async function signupAction(formData: FormData): Promise<void> {
     redirect('/signup?error=' + encodeURIComponent('비밀번호는 8자 이상이어야 합니다.'));
   }
 
-  const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) {
-    redirect('/signup?error=' + encodeURIComponent('이미 가입된 이메일입니다.'));
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { name } }
+  });
+
+  if (error) {
+    redirect('/signup?error=' + encodeURIComponent(error.message));
   }
 
-  const passwordHash = await bcrypt.hash(password, 10);
-  const user = await prisma.user.create({ data: { name, email, passwordHash } });
-  await setSessionCookie(user.id);
+  if (!data.session) {
+    redirect('/login?message=' + encodeURIComponent('가입 확인 이메일을 보냈습니다. 이메일을 확인한 뒤 로그인해주세요.'));
+  }
+
   redirect('/profile');
 }
 
@@ -34,24 +39,28 @@ export async function loginAction(formData: FormData): Promise<void> {
   const email = String(formData.get('email') ?? '').trim().toLowerCase();
   const password = String(formData.get('password') ?? '');
 
-  const user = await prisma.user.findUnique({ where: { email } });
-  const valid = user ? await bcrypt.compare(password, user.passwordHash) : false;
-  if (!user || !valid) {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
     redirect('/login?error=' + encodeURIComponent('이메일 또는 비밀번호가 올바르지 않습니다.'));
   }
 
-  await setSessionCookie(user!.id);
   redirect('/dashboard');
 }
 
 export async function logoutAction(): Promise<void> {
-  await clearSessionCookie();
+  const supabase = await createClient();
+  await supabase.auth.signOut();
   redirect('/');
 }
 
 export async function saveGoalAction(formData: FormData): Promise<void> {
-  const userId = await getCurrentUserId();
-  if (!userId) redirect('/login');
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
 
   const heightCm = Number(formData.get('heightCm'));
   const weightKg = Number(formData.get('weightKg'));
@@ -66,19 +75,40 @@ export async function saveGoalAction(formData: FormData): Promise<void> {
 
   const targets = calculateTargets({ heightCm, weightKg, age, sex, activityLevel, goalType });
 
-  await prisma.goal.upsert({
-    where: { userId: userId! },
-    create: { userId: userId!, heightCm, weightKg, age, sex, activityLevel, goalType, ...targets },
-    update: { heightCm, weightKg, age, sex, activityLevel, goalType, ...targets }
-  });
+  const { error } = await supabase.from('goals').upsert(
+    {
+      user_id: user!.id,
+      height_cm: heightCm,
+      weight_kg: weightKg,
+      age,
+      sex,
+      activity_level: activityLevel,
+      goal_type: goalType,
+      bmr: targets.bmr,
+      tdee: targets.tdee,
+      target_calories: targets.targetCalories,
+      target_protein_g: targets.targetProteinG,
+      target_carb_g: targets.targetCarbG,
+      target_fat_g: targets.targetFatG,
+      updated_at: new Date().toISOString()
+    },
+    { onConflict: 'user_id' }
+  );
+
+  if (error) {
+    redirect('/profile?error=' + encodeURIComponent(error.message));
+  }
 
   revalidatePath('/dashboard');
   redirect('/dashboard');
 }
 
 export async function addDietLogAction(formData: FormData): Promise<void> {
-  const userId = await getCurrentUserId();
-  if (!userId) redirect('/login');
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
 
   const mealName = String(formData.get('mealName') ?? '').trim();
   const calories = Number(formData.get('calories'));
@@ -90,9 +120,18 @@ export async function addDietLogAction(formData: FormData): Promise<void> {
     redirect('/diet?error=' + encodeURIComponent('음식 이름과 칼로리는 필수입니다.'));
   }
 
-  await prisma.dietLog.create({
-    data: { userId: userId!, mealName, calories, proteinG, carbG, fatG }
+  const { error } = await supabase.from('diet_logs').insert({
+    user_id: user!.id,
+    meal_name: mealName,
+    calories,
+    protein_g: proteinG,
+    carb_g: carbG,
+    fat_g: fatG
   });
+
+  if (error) {
+    redirect('/diet?error=' + encodeURIComponent(error.message));
+  }
 
   revalidatePath('/diet');
   revalidatePath('/dashboard');
@@ -100,8 +139,11 @@ export async function addDietLogAction(formData: FormData): Promise<void> {
 }
 
 export async function addWorkoutLogAction(formData: FormData): Promise<void> {
-  const userId = await getCurrentUserId();
-  if (!userId) redirect('/login');
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
 
   const exercise = String(formData.get('exercise') ?? '').trim();
   const sets = Number(formData.get('sets'));
@@ -112,9 +154,17 @@ export async function addWorkoutLogAction(formData: FormData): Promise<void> {
     redirect('/workout?error=' + encodeURIComponent('운동 이름, 세트, 횟수는 필수입니다.'));
   }
 
-  await prisma.workoutLog.create({
-    data: { userId: userId!, exercise, sets, reps, weightKg: weightKg || 0 }
+  const { error } = await supabase.from('workout_logs').insert({
+    user_id: user!.id,
+    exercise,
+    sets,
+    reps,
+    weight_kg: weightKg || 0
   });
+
+  if (error) {
+    redirect('/workout?error=' + encodeURIComponent(error.message));
+  }
 
   revalidatePath('/workout');
   redirect('/workout');
