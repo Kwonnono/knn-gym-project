@@ -7,6 +7,13 @@ import { calculateTargets, type ActivityLevel, type GoalType, type Sex, type Wei
 import { validatePassword } from '@/lib/passwordPolicy';
 import { getLocale, getDictionary } from '@/lib/i18n';
 
+// 'YYYY-MM-DD' 형태의 날짜만 온 경우 정오 시각으로 타임스탬프를 만들어 저장(자정 근처 타임존 오차 방지).
+function dateKeyToIso(dateKey: string): string | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateKey)) return null;
+  const iso = new Date(`${dateKey}T12:00:00`).toISOString();
+  return Number.isNaN(new Date(iso).getTime()) ? null : iso;
+}
+
 export async function signupAction(formData: FormData): Promise<void> {
   const t = getDictionary(await getLocale());
   const name = String(formData.get('name') ?? '').trim();
@@ -165,15 +172,17 @@ export async function addDietLogAction(formData: FormData): Promise<void> {
   } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 
+  const redirectTo = String(formData.get('redirectTo') ?? '/diet');
   const mealName = String(formData.get('mealName') ?? '').trim();
   const mealNumber = formData.get('mealNumber') ? Number(formData.get('mealNumber')) : null;
   const calories = Number(formData.get('calories'));
   const proteinG = Number(formData.get('proteinG') ?? 0);
   const carbG = Number(formData.get('carbG') ?? 0);
   const fatG = Number(formData.get('fatG') ?? 0);
+  const dateIso = formData.get('date') ? dateKeyToIso(String(formData.get('date'))) : null;
 
   if (!mealName || !calories) {
-    redirect('/diet?error=' + encodeURIComponent(t.diet.errorFoodRequired));
+    redirect(`${redirectTo}?error=` + encodeURIComponent(t.diet.errorFoodRequired));
   }
 
   const { error } = await supabase.from('diet_logs').insert({
@@ -183,16 +192,18 @@ export async function addDietLogAction(formData: FormData): Promise<void> {
     calories,
     protein_g: proteinG,
     carb_g: carbG,
-    fat_g: fatG
+    fat_g: fatG,
+    ...(dateIso ? { date: dateIso } : {})
   });
 
   if (error) {
-    redirect('/diet?error=' + encodeURIComponent(error.message));
+    redirect(`${redirectTo}?error=` + encodeURIComponent(error.message));
   }
 
   revalidatePath('/diet');
+  revalidatePath('/diet/history');
   revalidatePath('/dashboard');
-  redirect('/diet');
+  redirect(redirectTo);
 }
 
 export async function updateDietLogAction(formData: FormData): Promise<void> {
@@ -359,10 +370,13 @@ export async function addWorkoutLogAction(formData: FormData): Promise<void> {
   if (!WORKOUT_CATEGORIES.includes(category)) {
     redirect('/workout?error=' + encodeURIComponent(t.workout.errorCategory));
   }
+  const dateKey = formData.get('date') ? String(formData.get('date')) : null;
+  const dateIso = dateKey ? dateKeyToIso(dateKey) : null;
+  const redirectBase = `/workout?category=${category}${dateKey ? `&date=${dateKey}` : ''}`;
 
   const exercise = String(formData.get('exercise') ?? '').trim();
   if (!exercise) {
-    redirect(`/workout?category=${category}&error=` + encodeURIComponent(t.workout.errorExercise));
+    redirect(`${redirectBase}&error=` + encodeURIComponent(t.workout.errorExercise));
   }
 
   if (category === 'cardio') {
@@ -370,7 +384,7 @@ export async function addWorkoutLogAction(formData: FormData): Promise<void> {
     const distanceKm = formData.get('distanceKm') ? Number(formData.get('distanceKm')) : null;
 
     if (!durationMin) {
-      redirect(`/workout?category=cardio&error=` + encodeURIComponent(t.workout.errorDuration));
+      redirect(`${redirectBase}&error=` + encodeURIComponent(t.workout.errorDuration));
     }
 
     const { error } = await supabase.from('workout_logs').insert({
@@ -378,17 +392,18 @@ export async function addWorkoutLogAction(formData: FormData): Promise<void> {
       category,
       exercise,
       duration_min: durationMin,
-      distance_km: distanceKm
+      distance_km: distanceKm,
+      ...(dateIso ? { date: dateIso } : {})
     });
 
     if (error) {
-      redirect(`/workout?category=cardio&error=` + encodeURIComponent(error.message));
+      redirect(`${redirectBase}&error=` + encodeURIComponent(error.message));
     }
   } else {
     const setsData = parseSetsData(formData);
 
     if (setsData.length === 0) {
-      redirect(`/workout?category=${category}&error=` + encodeURIComponent(t.workout.errorSetsReps));
+      redirect(`${redirectBase}&error=` + encodeURIComponent(t.workout.errorSetsReps));
     }
 
     const { error } = await supabase.from('workout_logs').insert({
@@ -398,17 +413,18 @@ export async function addWorkoutLogAction(formData: FormData): Promise<void> {
       sets: setsData.length,
       reps: setsData[0].reps,
       weight_kg: setsData[0].weightKg,
-      sets_data: setsData
+      sets_data: setsData,
+      ...(dateIso ? { date: dateIso } : {})
     });
 
     if (error) {
-      redirect(`/workout?category=${category}&error=` + encodeURIComponent(error.message));
+      redirect(`${redirectBase}&error=` + encodeURIComponent(error.message));
     }
   }
 
   revalidatePath('/workout');
   revalidatePath('/dashboard');
-  redirect(`/workout?category=${category}`);
+  redirect(redirectBase);
 }
 
 export async function updateWorkoutLogAction(formData: FormData): Promise<void> {
@@ -424,7 +440,8 @@ export async function updateWorkoutLogAction(formData: FormData): Promise<void> 
   if (!WORKOUT_CATEGORIES.includes(category)) {
     redirect('/workout?error=' + encodeURIComponent(t.workout.errorCategory));
   }
-  const redirectTo = `/workout?category=${category}`;
+  const dateKey = formData.get('date') ? String(formData.get('date')) : null;
+  const redirectTo = `/workout?category=${category}${dateKey ? `&date=${dateKey}` : ''}`;
 
   const exercise = String(formData.get('exercise') ?? '').trim();
   if (!id || !exercise) {
@@ -486,11 +503,12 @@ export async function deleteWorkoutLogAction(formData: FormData): Promise<void> 
 
   const id = String(formData.get('id') ?? '');
   const category = String(formData.get('category') ?? 'chest');
+  const dateKey = formData.get('date') ? String(formData.get('date')) : null;
   if (id) {
     await supabase.from('workout_logs').delete().eq('id', id).eq('user_id', user.id);
   }
 
   revalidatePath('/workout');
   revalidatePath('/dashboard');
-  redirect(`/workout?category=${category}`);
+  redirect(`/workout?category=${category}${dateKey ? `&date=${dateKey}` : ''}`);
 }

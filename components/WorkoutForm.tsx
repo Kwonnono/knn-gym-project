@@ -15,11 +15,13 @@ interface SetRow {
 
 export function WorkoutForm({
   category,
+  date,
   isCardio,
   exercisePresets,
   labels
 }: {
   category: string;
+  date?: string;
   isCardio: boolean;
   exercisePresets: string[];
   labels: {
@@ -60,6 +62,7 @@ export function WorkoutForm({
       className="grid grid-cols-3 gap-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-950"
     >
       <input type="hidden" name="category" value={category} />
+      {date && <input type="hidden" name="date" value={date} />}
       <select value={selected} onChange={(e) => setSelected(e.target.value)} className={`col-span-3 ${inputClass}`}>
         <option value="" disabled>
           {labels.selectExercise}

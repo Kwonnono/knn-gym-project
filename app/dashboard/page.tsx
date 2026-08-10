@@ -8,11 +8,14 @@ import { getSetCount, getFirstSetDetail } from '@/lib/workoutVolume';
 import { WeightChart } from '@/components/WeightChart';
 import { groupDietLogsByMeal } from '@/lib/mealGroups';
 import { addWeightLogAction } from '@/app/actions';
+import { DateNav } from '@/components/DateNav';
 
-function startOfToday(): string {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d.toISOString();
+function pad(n: number): string {
+  return String(n).padStart(2, '0');
+}
+
+function dateKey(d: Date): string {
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
 function categoryLabel(t: Dictionary, category: string): string {
@@ -31,9 +34,9 @@ function categoryLabel(t: Dictionary, category: string): string {
 export default async function DashboardPage({
   searchParams
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; date?: string }>;
 }) {
-  const { error } = await searchParams;
+  const { error, date: rawDate } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user }
@@ -46,20 +49,26 @@ export default async function DashboardPage({
   const locale = await getLocale();
   const t = getDictionary(locale);
 
-  const todayStart = startOfToday();
+  const todayDateKey = dateKey(new Date());
+  const selectedDateKey = rawDate && /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : todayDateKey;
+  const selectedDayStart = new Date(`${selectedDateKey}T00:00:00`);
+  const selectedDayEnd = new Date(selectedDayStart);
+  selectedDayEnd.setDate(selectedDayEnd.getDate() + 1);
 
   const { data: dietLogs } = await supabase
     .from('diet_logs')
     .select('*')
     .eq('user_id', user.id)
-    .gte('date', todayStart)
+    .gte('date', selectedDayStart.toISOString())
+    .lt('date', selectedDayEnd.toISOString())
     .order('created_at', { ascending: false });
 
   const { data: workoutLogs } = await supabase
     .from('workout_logs')
     .select('*')
     .eq('user_id', user.id)
-    .gte('date', todayStart)
+    .gte('date', selectedDayStart.toISOString())
+    .lt('date', selectedDayEnd.toISOString())
     .order('created_at', { ascending: false });
 
   const thirtyDaysAgo = new Date();
@@ -71,8 +80,6 @@ export default async function DashboardPage({
     .gte('date', thirtyDaysAgo.toISOString())
     .order('date', { ascending: true });
   const weightPoints = (weightLogs ?? []).map((log) => ({ date: log.date, weightKg: log.weight_kg }));
-  const dateKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  const todayDateKey = dateKey(new Date());
   const hasTodayWeight = (weightLogs ?? []).some((log) => dateKey(new Date(log.date)) === todayDateKey);
 
   const consumed = (dietLogs ?? []).reduce(
@@ -103,7 +110,10 @@ export default async function DashboardPage({
       {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <h1 className="font-display text-4xl tracking-wide">{t.dashboard.title}</h1>
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="font-display text-4xl tracking-wide">{t.dashboard.title}</h1>
+            <DateNav date={selectedDateKey} todayLabel={t.dashboard.todayLabel} />
+          </div>
           <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
             {t.dashboard.goalLine(
               goalLabel,
@@ -162,7 +172,7 @@ export default async function DashboardPage({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-xl tracking-wide">{t.dashboard.todayDietLog}</h2>
-              <a href="/diet" className="text-sm underline">{t.dashboard.viewAll}</a>
+              <a href={`/diet?date=${selectedDateKey}`} className="text-sm underline">{t.dashboard.viewAll}</a>
             </div>
             <div className="overflow-x-auto rounded-xl border border-neutral-200 shadow-sm dark:border-neutral-800">
               <table className="w-full text-sm">
@@ -217,7 +227,7 @@ export default async function DashboardPage({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-xl tracking-wide">{t.dashboard.todayWorkoutLog}</h2>
-              <a href="/workout" className="text-sm underline">{t.dashboard.viewAll}</a>
+              <a href={`/workout?date=${selectedDateKey}`} className="text-sm underline">{t.dashboard.viewAll}</a>
             </div>
             <div className="overflow-x-auto rounded-xl border border-neutral-200 shadow-sm dark:border-neutral-800">
               <table className="w-full text-sm">
@@ -262,7 +272,7 @@ export default async function DashboardPage({
             </div>
             {!hasTodayWeight && (
               <form action={addWeightLogAction} className="mt-2 flex items-center gap-2 px-0.5">
-                <input type="hidden" name="redirectTo" value="/dashboard" />
+                <input type="hidden" name="redirectTo" value={`/dashboard?date=${selectedDateKey}`} />
                 <input
                   name="weightKg"
                   type="number"

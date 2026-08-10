@@ -37,7 +37,19 @@ interface Labels {
 const inputClass =
   'rounded-lg border border-neutral-300 bg-white px-2 py-1 text-sm transition-colors focus:border-neutral-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:focus:border-neutral-500';
 
-function StrengthEditForm({ log, category, labels, onCancel }: { log: WorkoutLog; category: string; labels: Labels; onCancel: () => void }) {
+function StrengthEditForm({
+  log,
+  category,
+  date,
+  labels,
+  onCancel
+}: {
+  log: WorkoutLog;
+  category: string;
+  date?: string;
+  labels: Labels;
+  onCancel: () => void;
+}) {
   const initialSets: { reps: string; weightKg: string }[] =
     log.sets_data && log.sets_data.length > 0
       ? log.sets_data.map((s) => ({ reps: String(s.reps), weightKg: String(s.weightKg) }))
@@ -63,6 +75,7 @@ function StrengthEditForm({ log, category, labels, onCancel }: { log: WorkoutLog
     <form action={updateWorkoutLogAction} className="space-y-2">
       <input type="hidden" name="id" value={log.id} />
       <input type="hidden" name="category" value={category} />
+      {date && <input type="hidden" name="date" value={date} />}
       <input type="hidden" name="setsData" value={setsDataJson} />
       <input
         name="exercise"
@@ -118,12 +131,14 @@ function StrengthEditForm({ log, category, labels, onCancel }: { log: WorkoutLog
 export function WorkoutLogTable({
   logs,
   category,
+  date,
   isCardio,
   locale,
   labels
 }: {
   logs: WorkoutLog[];
   category: string;
+  date?: string;
   isCardio: boolean;
   locale: 'ko' | 'en';
   labels: Labels;
@@ -168,9 +183,9 @@ export function WorkoutLogTable({
               <tr key={log.id} className="border-t border-neutral-100 dark:border-neutral-900">
                 <td colSpan={colSpan} className="px-4 py-3">
                   {isCardio ? (
-                    <CardioEditForm log={log} category={category} labels={labels} onCancel={() => setEditingId(null)} />
+                    <CardioEditForm log={log} category={category} date={date} labels={labels} onCancel={() => setEditingId(null)} />
                   ) : (
-                    <StrengthEditForm log={log} category={category} labels={labels} onCancel={() => setEditingId(null)} />
+                    <StrengthEditForm log={log} category={category} date={date} labels={labels} onCancel={() => setEditingId(null)} />
                   )}
                 </td>
               </tr>
@@ -207,6 +222,7 @@ export function WorkoutLogTable({
                   >
                     <input type="hidden" name="id" value={log.id} />
                     <input type="hidden" name="category" value={category} />
+                    {date && <input type="hidden" name="date" value={date} />}
                     <button type="submit" className="ml-2 text-xs text-red-600 underline dark:text-red-400">
                       {labels.delete}
                     </button>
@@ -221,11 +237,24 @@ export function WorkoutLogTable({
   );
 }
 
-function CardioEditForm({ log, category, labels, onCancel }: { log: WorkoutLog; category: string; labels: Labels; onCancel: () => void }) {
+function CardioEditForm({
+  log,
+  category,
+  date,
+  labels,
+  onCancel
+}: {
+  log: WorkoutLog;
+  category: string;
+  date?: string;
+  labels: Labels;
+  onCancel: () => void;
+}) {
   return (
     <form action={updateWorkoutLogAction} className="flex flex-wrap items-center gap-2">
       <input type="hidden" name="id" value={log.id} />
       <input type="hidden" name="category" value={category} />
+      {date && <input type="hidden" name="date" value={date} />}
       <input name="exercise" defaultValue={log.exercise} required className={`${inputClass} w-40`} />
       <input name="durationMin" type="number" defaultValue={log.duration_min ?? ''} required className={`${inputClass} w-20`} />
       <input name="distanceKm" type="number" step="0.1" defaultValue={log.distance_km ?? ''} className={`${inputClass} w-20`} />

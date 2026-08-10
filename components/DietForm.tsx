@@ -8,8 +8,12 @@ const inputClass =
   'rounded-lg border border-neutral-300 bg-white px-3 py-2 transition-colors focus:border-neutral-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:focus:border-neutral-500';
 
 export function DietForm({
+  date,
+  redirectTo,
   labels
 }: {
+  date?: string;
+  redirectTo?: string;
   labels: {
     mealName: string;
     mealNumberLabel: string;
@@ -47,6 +51,8 @@ export function DietForm({
       action={addDietLogAction}
       className="grid grid-cols-2 gap-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-950"
     >
+      {date && <input type="hidden" name="date" value={date} />}
+      {redirectTo && <input type="hidden" name="redirectTo" value={redirectTo} />}
       <input
         name="mealName"
         list="food-presets"
