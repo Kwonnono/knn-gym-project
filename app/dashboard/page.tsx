@@ -7,6 +7,7 @@ import { getLocale, getDictionary, type Dictionary } from '@/lib/i18n';
 import { getSetCount, getFirstSetDetail } from '@/lib/workoutVolume';
 import { WeightChart } from '@/components/WeightChart';
 import { groupDietLogsByMeal } from '@/lib/mealGroups';
+import { addWeightLogAction } from '@/app/actions';
 
 function startOfToday(): string {
   const d = new Date();
@@ -27,7 +28,12 @@ function categoryLabel(t: Dictionary, category: string): string {
   return map[category] ?? category;
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user }
@@ -65,6 +71,9 @@ export default async function DashboardPage() {
     .gte('date', thirtyDaysAgo.toISOString())
     .order('date', { ascending: true });
   const weightPoints = (weightLogs ?? []).map((log) => ({ date: log.date, weightKg: log.weight_kg }));
+  const dateKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const todayDateKey = dateKey(new Date());
+  const hasTodayWeight = (weightLogs ?? []).some((log) => dateKey(new Date(log.date)) === todayDateKey);
 
   const consumed = (dietLogs ?? []).reduce(
     (acc, log) => ({
@@ -91,6 +100,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
+      {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <h1 className="font-display text-4xl tracking-wide">{t.dashboard.title}</h1>
@@ -129,7 +139,11 @@ export default async function DashboardPage() {
 
             <div className="rounded-lg bg-neutral-50 py-5 text-center dark:bg-neutral-900">
               <p className="text-sm text-neutral-500 dark:text-neutral-400">{t.dashboard.remainingCalories}</p>
-              <p className="font-display text-5xl tracking-wide text-blue-600 dark:text-blue-400">
+              <p
+                className={`font-display text-5xl tracking-wide ${
+                  remainingCalories < 0 ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'
+                }`}
+              >
                 {remainingCalories}
                 <span className="ml-1 text-xl">kcal</span>
               </p>
@@ -246,6 +260,25 @@ export default async function DashboardPage() {
               <h2 className="font-display text-lg tracking-wide">{t.dashboard.weightChartTitle}</h2>
               <a href="/weight" className="text-sm underline">{t.dashboard.viewAll}</a>
             </div>
+            {!hasTodayWeight && (
+              <form action={addWeightLogAction} className="mt-2 flex items-center gap-2 px-0.5">
+                <input type="hidden" name="redirectTo" value="/dashboard" />
+                <input
+                  name="weightKg"
+                  type="number"
+                  step="0.1"
+                  placeholder={t.dashboard.quickWeightPlaceholder}
+                  required
+                  className="w-28 rounded-lg border border-neutral-300 bg-white px-2 py-1.5 text-sm transition-colors focus:border-neutral-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:focus:border-neutral-500"
+                />
+                <button
+                  type="submit"
+                  className="rounded-lg bg-black px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+                >
+                  {t.dashboard.quickWeightSubmit}
+                </button>
+              </form>
+            )}
             <div className="mt-2 flex min-h-0 flex-1 flex-col items-center justify-center px-0.5 pb-0.5">
               {weightPoints.length > 0 ? (
                 <WeightChart points={weightPoints} locale={locale} />

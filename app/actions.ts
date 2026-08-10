@@ -260,8 +260,9 @@ export async function addWeightLogAction(formData: FormData): Promise<void> {
   if (!user) redirect('/login');
 
   const weightKg = Number(formData.get('weightKg'));
+  const redirectTo = String(formData.get('redirectTo') ?? '/weight');
   if (!weightKg) {
-    redirect('/weight?error=' + encodeURIComponent(t.weight.errorWeightRequired));
+    redirect(`${redirectTo}?error=` + encodeURIComponent(t.weight.errorWeightRequired));
   }
 
   const { error } = await supabase.from('weight_logs').insert({
@@ -270,12 +271,12 @@ export async function addWeightLogAction(formData: FormData): Promise<void> {
   });
 
   if (error) {
-    redirect('/weight?error=' + encodeURIComponent(error.message));
+    redirect(`${redirectTo}?error=` + encodeURIComponent(error.message));
   }
 
   revalidatePath('/weight');
   revalidatePath('/dashboard');
-  redirect('/weight');
+  redirect(redirectTo);
 }
 
 export async function updateWeightLogAction(formData: FormData): Promise<void> {

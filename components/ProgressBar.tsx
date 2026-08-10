@@ -7,6 +7,9 @@ const COLOR_CLASSES: Record<ProgressBarColor, string> = {
   amber: 'bg-amber-500 dark:bg-amber-400'
 };
 
+const OVER_TARGET_BAR_CLASS = 'bg-red-500 dark:bg-red-400';
+const OVER_TARGET_TEXT_CLASS = 'text-red-600 dark:text-red-400';
+
 export function ProgressBar({
   label,
   value,
@@ -20,17 +23,18 @@ export function ProgressBar({
   unit: string;
   color?: ProgressBarColor;
 }) {
+  const isOver = target > 0 && value > target;
   const pct = target > 0 ? Math.min(100, Math.round((value / target) * 100)) : 0;
   return (
     <div>
       <div className="flex justify-between text-sm">
         <span>{label}</span>
-        <span className="text-neutral-500 dark:text-neutral-400">
+        <span className={isOver ? `font-medium ${OVER_TARGET_TEXT_CLASS}` : 'text-neutral-500 dark:text-neutral-400'}>
           {value}{unit} / {target}{unit}
         </span>
       </div>
       <div className="mt-1 h-2 rounded-full bg-neutral-200 dark:bg-neutral-800">
-        <div className={`h-2 rounded-full ${COLOR_CLASSES[color]}`} style={{ width: `${pct}%` }} />
+        <div className={`h-2 rounded-full ${isOver ? OVER_TARGET_BAR_CLASS : COLOR_CLASSES[color]}`} style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
