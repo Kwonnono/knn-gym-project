@@ -6,15 +6,16 @@ export { LOCALE_COOKIE, type Locale };
 const dictionary = {
   ko: {
     nav: {
-      home: '홈',
-      goal: '목표 설정',
-      diet: '식단 기록',
-      workout: '운동 기록',
-      mypage: '마이페이지',
-      settings: '설정',
-      login: '로그인',
-      signup: '회원가입',
-      logout: '로그아웃'
+      home: 'Dashboard',
+      goal: 'Goal',
+      diet: 'Diet',
+      workout: 'Workout',
+      weight: 'Weight',
+      mypage: 'Profile',
+      settings: 'Settings',
+      login: 'Log in',
+      signup: 'Sign up',
+      logout: 'Log out'
     },
     landing: {
       description:
@@ -77,9 +78,9 @@ const dictionary = {
       errorRequired: '모든 항목을 입력해주세요.'
     },
     dashboard: {
-      title: '홈',
-      goalLine: (goalLabel: string, bmr: number, tdee: number, target: number) =>
-        `목표: ${goalLabel} · BMR ${bmr}kcal · TDEE ${tdee}kcal · 목표 칼로리 ${target}kcal`,
+      title: 'Dashboard',
+      goalLine: (goalLabel: string, bmr: number, target: number) =>
+        `목표: ${goalLabel} · BMR(기초대사량) ${bmr}kcal · 목표 칼로리 ${target}kcal`,
       navGoalTitle: '목표 설정',
       navGoalDesc: '신체 정보 및 목표 재계산',
       navDietTitle: '식단 기록',
@@ -209,11 +210,12 @@ const dictionary = {
   },
   en: {
     nav: {
-      home: 'Home',
+      home: 'Dashboard',
       goal: 'Goal',
-      diet: 'Diet Log',
-      workout: 'Workout Log',
-      mypage: 'My Page',
+      diet: 'Diet',
+      workout: 'Workout',
+      weight: 'Weight',
+      mypage: 'Profile',
       settings: 'Settings',
       login: 'Log in',
       signup: 'Sign up',
@@ -281,9 +283,9 @@ const dictionary = {
       errorRequired: 'Please fill in every field.'
     },
     dashboard: {
-      title: 'Home',
-      goalLine: (goalLabel: string, bmr: number, tdee: number, target: number) =>
-        `Goal: ${goalLabel} · BMR ${bmr}kcal · TDEE ${tdee}kcal · Target ${target}kcal`,
+      title: 'Dashboard',
+      goalLine: (goalLabel: string, bmr: number, target: number) =>
+        `Goal: ${goalLabel} · BMR (Basal Metabolic Rate) ${bmr}kcal · Target ${target}kcal`,
       navGoalTitle: 'Goal',
       navGoalDesc: 'Body stats and recalculate targets',
       navDietTitle: 'Diet Log',

@@ -102,7 +102,7 @@ export default async function DashboardPage() {
         <div>
           <h1 className="font-display text-4xl tracking-wide">{t.dashboard.title}</h1>
           <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-            {t.dashboard.goalLine(goalLabel, goal.bmr, goal.tdee, goal.target_calories)}
+            {t.dashboard.goalLine(goalLabel, goal.bmr, goal.target_calories)}
           </p>
         </div>
         <a

@@ -30,19 +30,19 @@ export default async function ProfilePage({
       <form action={saveGoalAction} className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
           <label className="text-sm">
-            {t.profile.heightCm}
+            {t.profile.heightCm} <span className="text-red-500">*</span>
             <input name="heightCm" type="number" step="0.1" required defaultValue={goal?.height_cm} className={inputClass} />
           </label>
           <label className="text-sm">
-            {t.profile.weightKg}
+            {t.profile.weightKg} <span className="text-red-500">*</span>
             <input name="weightKg" type="number" step="0.1" required defaultValue={goal?.weight_kg} className={inputClass} />
           </label>
           <label className="text-sm">
-            {t.profile.age}
+            {t.profile.age} <span className="text-red-500">*</span>
             <input name="age" type="number" required defaultValue={goal?.age} className={inputClass} />
           </label>
           <label className="text-sm">
-            {t.profile.sex}
+            {t.profile.sex} <span className="text-red-500">*</span>
             <select name="sex" required defaultValue={goal?.sex ?? ''} className={inputClass}>
               <option value="" disabled>{t.profile.select}</option>
               <option value="male">{t.profile.sexMale}</option>
@@ -51,7 +51,7 @@ export default async function ProfilePage({
           </label>
         </div>
         <label className="block text-sm">
-          {t.profile.activityLevel}
+          {t.profile.activityLevel} <span className="text-red-500">*</span>
           <select name="activityLevel" required defaultValue={goal?.activity_level ?? ''} className={inputClass}>
             <option value="" disabled>{t.profile.select}</option>
             <option value="sedentary">{t.profile.activitySedentary}</option>
@@ -62,7 +62,7 @@ export default async function ProfilePage({
           </select>
         </label>
         <label className="block text-sm">
-          {t.profile.goalType}
+          {t.profile.goalType} <span className="text-red-500">*</span>
           <select name="goalType" required defaultValue={goal?.goal_type ?? ''} className={inputClass}>
             <option value="" disabled>{t.profile.select}</option>
             <option value="cutting">{t.profile.goalCutting}</option>
@@ -73,6 +73,10 @@ export default async function ProfilePage({
           </select>
         </label>
         <label className="block text-sm">
+          {t.profile.durationWeeks}
+          <input name="durationWeeks" type="number" min="1" defaultValue={goal?.duration_weeks ?? ''} className={inputClass} />
+        </label>
+        <label className="block text-sm">
           {t.profile.weightChangeSpeed}
           <select name="weightChangeSpeed" defaultValue={goal?.weight_change_speed ?? 'normal'} className={inputClass}>
             <option value="slow">{t.profile.speedSlow}</option>
@@ -81,10 +85,6 @@ export default async function ProfilePage({
           </select>
         </label>
         <div className="grid grid-cols-2 gap-3">
-          <label className="text-sm">
-            {t.profile.durationWeeks}
-            <input name="durationWeeks" type="number" min="1" defaultValue={goal?.duration_weeks ?? ''} className={inputClass} />
-          </label>
           <label className="text-sm">
             {t.profile.targetBodyFatPercent}
             <input
