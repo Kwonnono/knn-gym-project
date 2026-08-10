@@ -41,32 +41,32 @@ export function WeightChart({ points, locale = 'ko' }: { points: WeightPoint[]; 
   const showLabel = (i: number) => i % labelStep === 0 || i === coords.length - 1;
 
   return (
-    <div className="mx-auto w-full max-w-full">
-      <svg viewBox={`0 0 ${width} ${height}`} className="w-full text-blue-500 dark:text-blue-400" style={{ height: `${height}px` }}>
+    <div className="h-full w-full">
+      <svg viewBox={`0 0 ${width} ${height}`} className="h-full w-full text-blue-500 dark:text-blue-400">
         <path d={areaPath} fill="currentColor" className="opacity-[0.08]" />
         <polyline
           points={linePoints}
           fill="none"
           stroke="currentColor"
-          strokeWidth="2"
+          strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         {coords.map((c, i) => (
           <g key={i}>
-            <circle cx={c.x} cy={c.y} r="2.4" strokeWidth="1.3" className="fill-blue-500 stroke-white dark:fill-blue-400 dark:stroke-neutral-950" />
+            <circle cx={c.x} cy={c.y} r="3" strokeWidth="1.5" className="fill-blue-500 stroke-white dark:fill-blue-400 dark:stroke-neutral-950" />
             {showLabel(i) && (
               <>
                 <text
                   x={c.x}
-                  y={c.y - 7}
+                  y={c.y - 9}
                   textAnchor="middle"
-                  fontSize="9"
-                  className="fill-neutral-600 font-medium dark:fill-neutral-300"
+                  fontSize="13"
+                  className="fill-neutral-700 font-semibold dark:fill-neutral-200"
                 >
                   {c.weightKg}kg
                 </text>
-                <text x={c.x} y={height - 5} textAnchor="middle" fontSize="8" className="fill-neutral-400 dark:fill-neutral-500">
+                <text x={c.x} y={height - 4} textAnchor="middle" fontSize="11" className="fill-neutral-400 dark:fill-neutral-500">
                   {formatShortDate(c.date, locale)}
                 </text>
               </>

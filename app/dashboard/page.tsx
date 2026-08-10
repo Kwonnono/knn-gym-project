@@ -258,7 +258,7 @@ export default async function DashboardPage({
             </div>
           </div>
 
-          <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
+          <div className="flex min-h-[200px] max-h-[280px] flex-1 flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
             <div className="flex items-center justify-between px-0.5">
               <h2 className="font-display text-lg tracking-wide">{t.dashboard.weightChartTitle}</h2>
               <a href="/weight" className="text-sm underline">{t.dashboard.viewAll}</a>
