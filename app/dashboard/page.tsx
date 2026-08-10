@@ -97,6 +97,12 @@ export default async function DashboardPage({
   const dietMealGroups = groupDietLogsByMeal(dietLogs ?? []);
   const recentWorkoutLogs = (workoutLogs ?? []).slice(0, 5);
 
+  // 단백질 팁 기준 식품: 닭가슴살(100g당 31g 단백질, 1팩=100g 가정)
+  const PROTEIN_TIP_G_PER_100 = 31;
+  const remainingProteinG = goal.target_protein_g - consumed.proteinG;
+  const proteinTipPacks =
+    remainingProteinG > 5 ? Math.round((remainingProteinG / PROTEIN_TIP_G_PER_100) * 10) / 10 : null;
+
   const withinTolerance = (value: number, target: number) => target > 0 && value / target >= 0.95 && value / target <= 1.1;
   const goalAchieved =
     (dietLogs ?? []).length > 0 &&
@@ -160,6 +166,12 @@ export default async function DashboardPage({
               <ProgressBar label={t.dashboard.carb} value={consumed.carbG} target={goal.target_carb_g} unit="g" color="emerald" />
               <ProgressBar label={t.dashboard.fat} value={consumed.fatG} target={goal.target_fat_g} unit="g" color="amber" />
             </div>
+
+            {proteinTipPacks !== null && (
+              <p className="rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700 dark:bg-rose-950 dark:text-rose-300">
+                {t.dashboard.proteinTip(remainingProteinG, proteinTipPacks)}
+              </p>
+            )}
           </div>
 
           <div className="space-y-3">
