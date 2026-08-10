@@ -38,6 +38,7 @@ export interface TargetInput {
   activityLevel: ActivityLevel;
   goalType: GoalType;
   weightChangeSpeed?: WeightChangeSpeed;
+  targetSkeletalMuscleMassKg?: number;
 }
 
 export interface TargetOutput {
@@ -55,8 +56,11 @@ export function calculateBMR({ heightCm, weightKg, age, sex }: Pick<TargetInput,
   return Math.round(sex === 'male' ? base + 5 : base - 161);
 }
 
-function macrosFromCalories(targetCalories: number, weightKg: number) {
-  const targetProteinG = Math.round(weightKg * PROTEIN_G_PER_KG);
+// 단백질 필요량은 체지방을 포함한 총 체중보다 근육량에 더 비례하므로,
+// 목표 골격근량이 입력돼 있으면 체중 대신 그 값을 기준으로 계산합니다.
+function macrosFromCalories(targetCalories: number, weightKg: number, targetSkeletalMuscleMassKg?: number) {
+  const proteinBaseKg = targetSkeletalMuscleMassKg && targetSkeletalMuscleMassKg > 0 ? targetSkeletalMuscleMassKg : weightKg;
+  const targetProteinG = Math.round(proteinBaseKg * PROTEIN_G_PER_KG);
   const targetFatG = Math.round((targetCalories * FAT_CALORIE_RATIO) / 9);
   const remainingCalories = targetCalories - targetProteinG * 4 - targetFatG * 9;
   const targetCarbG = Math.max(0, Math.round(remainingCalories / 4));
@@ -68,7 +72,7 @@ export function calculateTargets(input: TargetInput): TargetOutput {
   const tdee = Math.round(bmr * ACTIVITY_MULTIPLIER[input.activityLevel]);
   const speedMultiplier = WEIGHT_CHANGE_SPEED_MULTIPLIER[input.weightChangeSpeed ?? 'normal'];
   const targetCalories = Math.max(1200, tdee + Math.round(GOAL_CALORIE_ADJUSTMENT[input.goalType] * speedMultiplier));
-  const macros = macrosFromCalories(targetCalories, input.weightKg);
+  const macros = macrosFromCalories(targetCalories, input.weightKg, input.targetSkeletalMuscleMassKg);
 
   return { bmr, tdee, targetCalories, ...macros };
 }
@@ -93,7 +97,7 @@ export function calculateWeeklyCurriculum(input: TargetInput, durationWeeks: num
   for (let week = 1; week <= durationWeeks; week += 1) {
     const progress = durationWeeks === 1 ? 1 : (week - 1) / (durationWeeks - 1);
     const targetCalories = Math.round(startCalories + (finalTargets.targetCalories - startCalories) * progress);
-    const macros = macrosFromCalories(targetCalories, input.weightKg);
+    const macros = macrosFromCalories(targetCalories, input.weightKg, input.targetSkeletalMuscleMassKg);
     entries.push({ week, targetCalories, ...macros });
   }
   return entries;

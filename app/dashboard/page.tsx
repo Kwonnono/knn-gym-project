@@ -98,7 +98,8 @@ export default async function DashboardPage() {
         sex: goal.sex,
         activityLevel: goal.activity_level,
         goalType: goal.goal_type,
-        weightChangeSpeed: (goal.weight_change_speed as WeightChangeSpeed) ?? 'normal'
+        weightChangeSpeed: (goal.weight_change_speed as WeightChangeSpeed) ?? 'normal',
+        targetSkeletalMuscleMassKg: goal.target_skeletal_muscle_mass_kg ?? undefined
       },
       goal.duration_weeks
     );

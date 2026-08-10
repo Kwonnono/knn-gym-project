@@ -96,18 +96,28 @@ export default async function ProfilePage({
             />
           </label>
           <label className="text-sm">
-            {t.profile.skeletalMuscleMassKg}
+            {t.profile.bodyFatPercent}
+            <input name="bodyFatPercent" type="number" step="0.1" defaultValue={goal?.body_fat_percent ?? ''} className={inputClass} />
+          </label>
+          <label className="text-sm">
+            {t.profile.currentSkeletalMuscleMassKg}
             <input
-              name="skeletalMuscleMassKg"
+              name="currentSkeletalMuscleMassKg"
               type="number"
               step="0.1"
-              defaultValue={goal?.skeletal_muscle_mass_kg ?? ''}
+              defaultValue={goal?.current_skeletal_muscle_mass_kg ?? ''}
               className={inputClass}
             />
           </label>
           <label className="text-sm">
-            {t.profile.bodyFatPercent}
-            <input name="bodyFatPercent" type="number" step="0.1" defaultValue={goal?.body_fat_percent ?? ''} className={inputClass} />
+            {t.profile.targetSkeletalMuscleMassKg}
+            <input
+              name="targetSkeletalMuscleMassKg"
+              type="number"
+              step="0.1"
+              defaultValue={goal?.target_skeletal_muscle_mass_kg ?? ''}
+              className={inputClass}
+            />
           </label>
         </div>
         <button

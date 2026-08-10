@@ -100,14 +100,28 @@ export async function saveGoalAction(formData: FormData): Promise<void> {
   const weightChangeSpeed = (String(formData.get('weightChangeSpeed') ?? 'normal') || 'normal') as WeightChangeSpeed;
   const durationWeeks = formData.get('durationWeeks') ? Number(formData.get('durationWeeks')) : null;
   const targetBodyFatPercent = formData.get('targetBodyFatPercent') ? Number(formData.get('targetBodyFatPercent')) : null;
-  const skeletalMuscleMassKg = formData.get('skeletalMuscleMassKg') ? Number(formData.get('skeletalMuscleMassKg')) : null;
+  const currentSkeletalMuscleMassKg = formData.get('currentSkeletalMuscleMassKg')
+    ? Number(formData.get('currentSkeletalMuscleMassKg'))
+    : null;
+  const targetSkeletalMuscleMassKg = formData.get('targetSkeletalMuscleMassKg')
+    ? Number(formData.get('targetSkeletalMuscleMassKg'))
+    : null;
   const bodyFatPercent = formData.get('bodyFatPercent') ? Number(formData.get('bodyFatPercent')) : null;
 
   if (!heightCm || !weightKg || !age || !sex || !activityLevel || !goalType) {
     redirect('/profile?error=' + encodeURIComponent(t.profile.errorRequired));
   }
 
-  const targets = calculateTargets({ heightCm, weightKg, age, sex, activityLevel, goalType, weightChangeSpeed });
+  const targets = calculateTargets({
+    heightCm,
+    weightKg,
+    age,
+    sex,
+    activityLevel,
+    goalType,
+    weightChangeSpeed,
+    targetSkeletalMuscleMassKg: targetSkeletalMuscleMassKg ?? undefined
+  });
 
   const { error } = await supabase.from('goals').upsert(
     {
@@ -121,7 +135,8 @@ export async function saveGoalAction(formData: FormData): Promise<void> {
       weight_change_speed: weightChangeSpeed,
       duration_weeks: durationWeeks,
       target_body_fat_percent: targetBodyFatPercent,
-      skeletal_muscle_mass_kg: skeletalMuscleMassKg,
+      current_skeletal_muscle_mass_kg: currentSkeletalMuscleMassKg,
+      target_skeletal_muscle_mass_kg: targetSkeletalMuscleMassKg,
       body_fat_percent: bodyFatPercent,
       bmr: targets.bmr,
       tdee: targets.tdee,
