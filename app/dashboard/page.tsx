@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { TargetIcon, UtensilsIcon, DumbbellIcon } from '@/components/icons';
+import { getLocale, getDictionary, type Dictionary } from '@/lib/i18n';
 
 function startOfToday(): string {
   const d = new Date();
@@ -39,15 +40,18 @@ function NavCard({ href, icon, title, description }: { href: string; icon: React
   );
 }
 
-const CATEGORY_LABEL: Record<string, string> = {
-  chest: '가슴',
-  back: '등',
-  shoulders: '어깨',
-  arms: '팔',
-  legs: '하체',
-  core: '코어',
-  cardio: '유산소'
-};
+function categoryLabel(t: Dictionary, category: string): string {
+  const map: Record<string, string> = {
+    chest: t.workout.categoryChest,
+    back: t.workout.categoryBack,
+    shoulders: t.workout.categoryShoulders,
+    arms: t.workout.categoryArms,
+    legs: t.workout.categoryLegs,
+    core: t.workout.categoryCore,
+    cardio: t.workout.categoryCardio
+  };
+  return map[category] ?? category;
+}
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -58,6 +62,9 @@ export default async function DashboardPage() {
 
   const { data: goal } = await supabase.from('goals').select('*').eq('user_id', user.id).maybeSingle();
   if (!goal) redirect('/profile');
+
+  const locale = await getLocale();
+  const t = getDictionary(locale);
 
   const todayStart = startOfToday();
 
@@ -85,55 +92,52 @@ export default async function DashboardPage() {
     { calories: 0, proteinG: 0, carbG: 0, fatG: 0 }
   );
 
-  const goalLabel =
-    { cutting: '커팅', bulking: '벌크업', maintenance: '유지', mini_cut: '미니컷', mini_bulk: '미니벌크' }[
-      goal.goal_type as string
-    ] ?? goal.goal_type;
+  const goalLabel = t.goalLabels[goal.goal_type as keyof typeof t.goalLabels] ?? goal.goal_type;
   const recentDietLogs = (dietLogs ?? []).slice(0, 5);
   const recentWorkoutLogs = (workoutLogs ?? []).slice(0, 5);
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display text-4xl tracking-wide">홈</h1>
+        <h1 className="font-display text-4xl tracking-wide">{t.dashboard.title}</h1>
         <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-          목표: <span className="font-medium text-black dark:text-white">{goalLabel}</span> · BMR {goal.bmr}kcal · TDEE {goal.tdee}kcal · 목표 칼로리 {goal.target_calories}kcal
+          {t.dashboard.goalLine(goalLabel, goal.bmr, goal.tdee, goal.target_calories)}
         </p>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
-        <NavCard href="/profile" icon={<TargetIcon />} title="목표 설정" description="신체 정보 및 목표 재계산" />
-        <NavCard href="/diet" icon={<UtensilsIcon />} title="식단 기록" description="오늘 먹은 것 기록하기" />
-        <NavCard href="/workout" icon={<DumbbellIcon />} title="운동 기록" description="부위별 운동 기록하기" />
+        <NavCard href="/profile" icon={<TargetIcon />} title={t.dashboard.navGoalTitle} description={t.dashboard.navGoalDesc} />
+        <NavCard href="/diet" icon={<UtensilsIcon />} title={t.dashboard.navDietTitle} description={t.dashboard.navDietDesc} />
+        <NavCard href="/workout" icon={<DumbbellIcon />} title={t.dashboard.navWorkoutTitle} description={t.dashboard.navWorkoutDesc} />
       </div>
 
       <div className="space-y-4 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
-        <h2 className="font-display text-xl tracking-wide">오늘 섭취</h2>
-        <Stat label="칼로리" value={consumed.calories} target={goal.target_calories} unit="kcal" />
-        <Stat label="단백질" value={consumed.proteinG} target={goal.target_protein_g} unit="g" />
-        <Stat label="탄수화물" value={consumed.carbG} target={goal.target_carb_g} unit="g" />
-        <Stat label="지방" value={consumed.fatG} target={goal.target_fat_g} unit="g" />
+        <h2 className="font-display text-xl tracking-wide">{t.dashboard.todayIntake}</h2>
+        <Stat label={t.dashboard.calories} value={consumed.calories} target={goal.target_calories} unit="kcal" />
+        <Stat label={t.dashboard.protein} value={consumed.proteinG} target={goal.target_protein_g} unit="g" />
+        <Stat label={t.dashboard.carb} value={consumed.carbG} target={goal.target_carb_g} unit="g" />
+        <Stat label={t.dashboard.fat} value={consumed.fatG} target={goal.target_fat_g} unit="g" />
       </div>
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="font-display text-xl tracking-wide">오늘 식단 기록</h2>
-          <a href="/diet" className="text-sm underline">전체보기</a>
+          <h2 className="font-display text-xl tracking-wide">{t.dashboard.todayDietLog}</h2>
+          <a href="/diet" className="text-sm underline">{t.dashboard.viewAll}</a>
         </div>
         <div className="overflow-x-auto rounded-xl border border-neutral-200 shadow-sm dark:border-neutral-800">
           <table className="w-full text-sm">
             <thead className="bg-neutral-50 text-left text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
               <tr>
-                <th className="px-4 py-2 font-medium">음식</th>
-                <th className="px-4 py-2 font-medium">칼로리</th>
-                <th className="px-4 py-2 font-medium">단백질</th>
+                <th className="px-4 py-2 font-medium">{t.dashboard.food}</th>
+                <th className="px-4 py-2 font-medium">{t.dashboard.calories}</th>
+                <th className="px-4 py-2 font-medium">{t.dashboard.protein}</th>
               </tr>
             </thead>
             <tbody>
               {recentDietLogs.length === 0 && (
                 <tr>
                   <td colSpan={3} className="px-4 py-6 text-center text-neutral-500 dark:text-neutral-400">
-                    아직 기록이 없습니다.
+                    {t.dashboard.noLogsYet}
                   </td>
                 </tr>
               )}
@@ -151,34 +155,34 @@ export default async function DashboardPage() {
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="font-display text-xl tracking-wide">오늘 운동 기록</h2>
-          <a href="/workout" className="text-sm underline">전체보기</a>
+          <h2 className="font-display text-xl tracking-wide">{t.dashboard.todayWorkoutLog}</h2>
+          <a href="/workout" className="text-sm underline">{t.dashboard.viewAll}</a>
         </div>
         <div className="overflow-x-auto rounded-xl border border-neutral-200 shadow-sm dark:border-neutral-800">
           <table className="w-full text-sm">
             <thead className="bg-neutral-50 text-left text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
               <tr>
-                <th className="px-4 py-2 font-medium">부위</th>
-                <th className="px-4 py-2 font-medium">운동</th>
-                <th className="px-4 py-2 font-medium">내용</th>
+                <th className="px-4 py-2 font-medium">{t.dashboard.part}</th>
+                <th className="px-4 py-2 font-medium">{t.dashboard.exercise}</th>
+                <th className="px-4 py-2 font-medium">{t.dashboard.content}</th>
               </tr>
             </thead>
             <tbody>
               {recentWorkoutLogs.length === 0 && (
                 <tr>
                   <td colSpan={3} className="px-4 py-6 text-center text-neutral-500 dark:text-neutral-400">
-                    아직 기록이 없습니다.
+                    {t.dashboard.noLogsYet}
                   </td>
                 </tr>
               )}
               {recentWorkoutLogs.map((log) => (
                 <tr key={log.id} className="border-t border-neutral-100 dark:border-neutral-900">
-                  <td className="px-4 py-2">{CATEGORY_LABEL[log.category] ?? log.category}</td>
+                  <td className="px-4 py-2">{categoryLabel(t, log.category)}</td>
                   <td className="px-4 py-2 font-medium">{log.exercise}</td>
                   <td className="px-4 py-2">
                     {log.category === 'cardio'
-                      ? `${log.duration_min}분${log.distance_km ? ` · ${log.distance_km}km` : ''}`
-                      : `${log.sets}세트 × ${log.reps}회 × ${log.weight_kg}kg`}
+                      ? t.dashboard.cardioContent(log.duration_min, log.distance_km)
+                      : t.dashboard.strengthContent(log.sets, log.reps, log.weight_kg)}
                   </td>
                 </tr>
               ))}

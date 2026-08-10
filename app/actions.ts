@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { calculateTargets, type ActivityLevel, type GoalType, type Sex } from '@/lib/calc';
 import { validatePassword } from '@/lib/passwordPolicy';
+import { getLocale, getDictionary } from '@/lib/i18n';
 
 const anthropic = new Anthropic();
 
@@ -22,8 +23,10 @@ export async function estimateNutritionAction(
   foodName: string,
   grams: number
 ): Promise<{ calories: number; proteinG: number; carbG: number; fatG: number } | { error: string }> {
+  const t = getDictionary(await getLocale());
+
   if (!foodName.trim() || !grams) {
-    return { error: '음식 이름과 그램(g) 수를 입력해주세요.' };
+    return { error: t.diet.errorAiInput };
   }
 
   try {
@@ -43,22 +46,23 @@ export async function estimateNutritionAction(
     });
 
     if (response.stop_reason === 'refusal' || !response.parsed_output) {
-      return { error: 'AI가 계산하지 못했습니다. 직접 입력해주세요.' };
+      return { error: t.diet.errorAiFail };
     }
 
     return response.parsed_output;
   } catch {
-    return { error: 'AI 계산 중 문제가 발생했습니다. 직접 입력해주세요.' };
+    return { error: t.diet.errorAiException };
   }
 }
 
 export async function signupAction(formData: FormData): Promise<void> {
+  const t = getDictionary(await getLocale());
   const name = String(formData.get('name') ?? '').trim();
   const email = String(formData.get('email') ?? '').trim().toLowerCase();
   const password = String(formData.get('password') ?? '');
 
   if (!name || !email || !password) {
-    redirect('/signup?error=' + encodeURIComponent('모든 항목을 입력해주세요.'));
+    redirect('/signup?error=' + encodeURIComponent(t.signup.errorRequired));
   }
   const passwordCheck = validatePassword(password);
   if (!passwordCheck.valid) {
@@ -77,13 +81,14 @@ export async function signupAction(formData: FormData): Promise<void> {
   }
 
   if (!data.session) {
-    redirect('/login?message=' + encodeURIComponent('가입 확인 이메일을 보냈습니다. 이메일을 확인한 뒤 로그인해주세요.'));
+    redirect('/login?message=' + encodeURIComponent(t.signup.confirmEmailSent));
   }
 
   redirect('/profile');
 }
 
 export async function loginAction(formData: FormData): Promise<void> {
+  const t = getDictionary(await getLocale());
   const email = String(formData.get('email') ?? '').trim().toLowerCase();
   const password = String(formData.get('password') ?? '');
 
@@ -91,7 +96,7 @@ export async function loginAction(formData: FormData): Promise<void> {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    redirect('/login?error=' + encodeURIComponent('이메일 또는 비밀번호가 올바르지 않습니다.'));
+    redirect('/login?error=' + encodeURIComponent(t.login.errorInvalid));
   }
 
   redirect('/dashboard');
@@ -104,6 +109,7 @@ export async function logoutAction(): Promise<void> {
 }
 
 export async function updateProfileAction(formData: FormData): Promise<void> {
+  const t = getDictionary(await getLocale());
   const supabase = await createClient();
   const {
     data: { user }
@@ -112,7 +118,7 @@ export async function updateProfileAction(formData: FormData): Promise<void> {
 
   const name = String(formData.get('name') ?? '').trim();
   if (!name) {
-    redirect('/settings?error=' + encodeURIComponent('이름 또는 닉네임을 입력해주세요.'));
+    redirect('/settings?error=' + encodeURIComponent(t.settings.errorNameRequired));
   }
 
   const { error } = await supabase.auth.updateUser({ data: { name } });
@@ -122,10 +128,11 @@ export async function updateProfileAction(formData: FormData): Promise<void> {
 
   revalidatePath('/mypage');
   revalidatePath('/settings');
-  redirect('/settings?message=' + encodeURIComponent('저장했습니다.'));
+  redirect('/settings?message=' + encodeURIComponent(t.settings.saved));
 }
 
 export async function saveGoalAction(formData: FormData): Promise<void> {
+  const t = getDictionary(await getLocale());
   const supabase = await createClient();
   const {
     data: { user }
@@ -140,7 +147,7 @@ export async function saveGoalAction(formData: FormData): Promise<void> {
   const goalType = String(formData.get('goalType')) as GoalType;
 
   if (!heightCm || !weightKg || !age || !sex || !activityLevel || !goalType) {
-    redirect('/profile?error=' + encodeURIComponent('모든 항목을 입력해주세요.'));
+    redirect('/profile?error=' + encodeURIComponent(t.profile.errorRequired));
   }
 
   const targets = calculateTargets({ heightCm, weightKg, age, sex, activityLevel, goalType });
@@ -174,6 +181,7 @@ export async function saveGoalAction(formData: FormData): Promise<void> {
 }
 
 export async function addDietLogAction(formData: FormData): Promise<void> {
+  const t = getDictionary(await getLocale());
   const supabase = await createClient();
   const {
     data: { user }
@@ -187,7 +195,7 @@ export async function addDietLogAction(formData: FormData): Promise<void> {
   const fatG = Number(formData.get('fatG') ?? 0);
 
   if (!mealName || !calories) {
-    redirect('/diet?error=' + encodeURIComponent('음식 이름과 칼로리는 필수입니다.'));
+    redirect('/diet?error=' + encodeURIComponent(t.diet.errorFoodRequired));
   }
 
   const { error } = await supabase.from('diet_logs').insert({
@@ -212,6 +220,7 @@ const WORKOUT_CATEGORIES = ['chest', 'back', 'shoulders', 'arms', 'legs', 'core'
 export type WorkoutCategory = (typeof WORKOUT_CATEGORIES)[number];
 
 export async function addWorkoutLogAction(formData: FormData): Promise<void> {
+  const t = getDictionary(await getLocale());
   const supabase = await createClient();
   const {
     data: { user }
@@ -220,12 +229,12 @@ export async function addWorkoutLogAction(formData: FormData): Promise<void> {
 
   const category = String(formData.get('category') ?? '') as WorkoutCategory;
   if (!WORKOUT_CATEGORIES.includes(category)) {
-    redirect('/workout?error=' + encodeURIComponent('잘못된 운동 부위입니다.'));
+    redirect('/workout?error=' + encodeURIComponent(t.workout.errorCategory));
   }
 
   const exercise = String(formData.get('exercise') ?? '').trim();
   if (!exercise) {
-    redirect(`/workout?category=${category}&error=` + encodeURIComponent('운동 이름을 입력해주세요.'));
+    redirect(`/workout?category=${category}&error=` + encodeURIComponent(t.workout.errorExercise));
   }
 
   if (category === 'cardio') {
@@ -233,7 +242,7 @@ export async function addWorkoutLogAction(formData: FormData): Promise<void> {
     const distanceKm = formData.get('distanceKm') ? Number(formData.get('distanceKm')) : null;
 
     if (!durationMin) {
-      redirect(`/workout?category=cardio&error=` + encodeURIComponent('운동 시간(분)을 입력해주세요.'));
+      redirect(`/workout?category=cardio&error=` + encodeURIComponent(t.workout.errorDuration));
     }
 
     const { error } = await supabase.from('workout_logs').insert({
@@ -253,7 +262,7 @@ export async function addWorkoutLogAction(formData: FormData): Promise<void> {
     const weightKg = formData.get('weightKg') ? Number(formData.get('weightKg')) : 0;
 
     if (!sets || !reps) {
-      redirect(`/workout?category=${category}&error=` + encodeURIComponent('세트, 횟수는 필수입니다.'));
+      redirect(`/workout?category=${category}&error=` + encodeURIComponent(t.workout.errorSetsReps));
     }
 
     const { error } = await supabase.from('workout_logs').insert({

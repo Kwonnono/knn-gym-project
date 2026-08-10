@@ -1,0 +1,372 @@
+import { cookies } from 'next/headers';
+import { LOCALE_COOKIE, type Locale } from './i18n-constants';
+
+export { LOCALE_COOKIE, type Locale };
+
+const dictionary = {
+  ko: {
+    nav: {
+      home: '홈',
+      goal: '목표 설정',
+      diet: '식단 기록',
+      workout: '운동 기록',
+      mypage: '마이페이지',
+      settings: '설정',
+      login: '로그인',
+      signup: '회원가입',
+      logout: '로그아웃'
+    },
+    landing: {
+      description:
+        '신체 정보를 입력하면 목표(벌크업/커팅/유지)에 맞는 칼로리와 탄단지 목표치를 자동 계산해드립니다. 일일 식단과 운동을 기록하고 목표 대비 진행 상황을 확인하세요.',
+      ctaSignup: '무료로 회원가입',
+      ctaLogin: '로그인'
+    },
+    login: {
+      title: '로그인',
+      email: '이메일',
+      password: '비밀번호',
+      submit: '로그인',
+      noAccount: '계정이 없으신가요?',
+      signupLink: '회원가입',
+      errorInvalid: '이메일 또는 비밀번호가 올바르지 않습니다.'
+    },
+    signup: {
+      title: '회원가입',
+      name: '이름 또는 닉네임',
+      email: '이메일',
+      password: '비밀번호',
+      passwordHint: '8자 이상 입력해주세요 (12자 이상 권장). 복잡한 특수문자 조합보다 길고 기억하기 쉬운 문장이 더 안전해요.',
+      submit: '가입하기',
+      haveAccount: '이미 계정이 있으신가요?',
+      loginLink: '로그인',
+      errorRequired: '모든 항목을 입력해주세요.',
+      confirmEmailSent: '가입 확인 이메일을 보냈습니다. 이메일을 확인한 뒤 로그인해주세요.'
+    },
+    profile: {
+      title: '목표 설정',
+      description: '신체 정보와 목표를 입력하면 일일 칼로리 및 탄단지 목표치를 자동 계산합니다.',
+      heightCm: '키 (cm)',
+      weightKg: '몸무게 (kg)',
+      age: '나이',
+      sex: '성별',
+      sexMale: '남성',
+      sexFemale: '여성',
+      activityLevel: '활동량',
+      activitySedentary: '거의 안 움직임 (사무직, 운동 안 함)',
+      activityLight: '가벼운 활동 (주 1-3회 운동)',
+      activityModerate: '보통 활동 (주 3-5회 운동)',
+      activityActive: '활발한 활동 (주 6-7회 운동)',
+      activityVeryActive: '매우 활발 (매일 강도 높은 운동/육체노동)',
+      goalType: '목표',
+      goalCutting: '커팅 (체지방 감량)',
+      goalBulking: '벌크업 (근육량 증가)',
+      goalMaintenance: '유지',
+      goalMiniCut: '미니컷 (2~4주 단기 강한 커팅)',
+      goalMiniBulk: '미니벌크 (2~4주 단기 강한 벌크업)',
+      select: '선택',
+      submit: '목표 계산하기',
+      errorRequired: '모든 항목을 입력해주세요.'
+    },
+    dashboard: {
+      title: '홈',
+      goalLine: (goalLabel: string, bmr: number, tdee: number, target: number) =>
+        `목표: ${goalLabel} · BMR ${bmr}kcal · TDEE ${tdee}kcal · 목표 칼로리 ${target}kcal`,
+      navGoalTitle: '목표 설정',
+      navGoalDesc: '신체 정보 및 목표 재계산',
+      navDietTitle: '식단 기록',
+      navDietDesc: '오늘 먹은 것 기록하기',
+      navWorkoutTitle: '운동 기록',
+      navWorkoutDesc: '부위별 운동 기록하기',
+      todayIntake: '오늘 섭취',
+      calories: '칼로리',
+      protein: '단백질',
+      carb: '탄수화물',
+      fat: '지방',
+      todayDietLog: '오늘 식단 기록',
+      todayWorkoutLog: '오늘 운동 기록',
+      viewAll: '전체보기',
+      noLogsYet: '아직 기록이 없습니다.',
+      food: '음식',
+      part: '부위',
+      exercise: '운동',
+      content: '내용',
+      cardioContent: (duration: number, distance: number | null) => `${duration}분${distance ? ` · ${distance}km` : ''}`,
+      strengthContent: (sets: number, reps: number, weight: number) => `${sets}세트 × ${reps}회 × ${weight}kg`
+    },
+    diet: {
+      title: '오늘의 식단 기록',
+      mealName: '음식 이름 (예: 닭가슴살 샐러드)',
+      grams: '양 (g)',
+      aiCalc: 'AI로 계산하기',
+      aiCalculating: '계산 중...',
+      calories: '칼로리 (kcal)',
+      protein: '단백질 (g)',
+      carb: '탄수화물 (g)',
+      fat: '지방 (g)',
+      submit: '추가하기',
+      noLogs: '오늘 기록된 식단이 없습니다.',
+      colFood: '음식',
+      colCalories: '칼로리',
+      colProtein: '단백질',
+      colCarb: '탄수화물',
+      colFat: '지방',
+      errorFoodRequired: '음식 이름과 칼로리는 필수입니다.',
+      errorAiInput: '음식 이름과 그램(g) 수를 입력해주세요.',
+      errorAiFail: 'AI가 계산하지 못했습니다. 직접 입력해주세요.',
+      errorAiException: 'AI 계산 중 문제가 발생했습니다. 직접 입력해주세요.'
+    },
+    workout: {
+      title: '오늘의 운동 기록',
+      categoryChest: '가슴',
+      categoryBack: '등',
+      categoryShoulders: '어깨',
+      categoryArms: '팔',
+      categoryLegs: '하체',
+      categoryCore: '코어',
+      categoryCardio: '유산소',
+      exerciseName: '운동 이름',
+      durationMin: '시간 (분)',
+      distanceKm: '거리 (km, 선택)',
+      sets: '세트',
+      reps: '횟수',
+      weightKg: '무게 (kg)',
+      submit: '추가하기',
+      noLogs: '오늘 기록된 운동이 없습니다.',
+      colExercise: '운동',
+      colDuration: '시간',
+      colDistance: '거리',
+      colSets: '세트',
+      colReps: '횟수',
+      colWeight: '무게',
+      errorCategory: '잘못된 운동 부위입니다.',
+      errorExercise: '운동 이름을 입력해주세요.',
+      errorDuration: '운동 시간(분)을 입력해주세요.',
+      errorSetsReps: '세트, 횟수는 필수입니다.'
+    },
+    mypage: {
+      title: '마이페이지',
+      accountInfo: '계정 정보',
+      nameLabel: '이름 / 닉네임',
+      emailLabel: '이메일',
+      editProfile: '프로필 수정하기',
+      currentGoal: '현재 목표',
+      targetCalories: '목표 칼로리',
+      noGoal: '아직 목표가 설정되지 않았습니다.',
+      resetGoal: '목표 다시 설정하기',
+      backHome: '홈으로 돌아가기'
+    },
+    settings: {
+      title: '설정',
+      profile: '프로필',
+      nameLabel: '이름 또는 닉네임',
+      save: '저장',
+      account: '계정',
+      emailLabel: '이메일',
+      logout: '로그아웃',
+      saved: '저장했습니다.',
+      errorNameRequired: '이름 또는 닉네임을 입력해주세요.'
+    },
+    goalLabels: {
+      cutting: '커팅',
+      bulking: '벌크업',
+      maintenance: '유지',
+      mini_cut: '미니컷',
+      mini_bulk: '미니벌크'
+    },
+    language: {
+      label: '언어',
+      korean: '한국어',
+      english: 'English'
+    }
+  },
+  en: {
+    nav: {
+      home: 'Home',
+      goal: 'Goal',
+      diet: 'Diet Log',
+      workout: 'Workout Log',
+      mypage: 'My Page',
+      settings: 'Settings',
+      login: 'Log in',
+      signup: 'Sign up',
+      logout: 'Log out'
+    },
+    landing: {
+      description:
+        'Enter your body stats and we\'ll calculate your daily calorie and macro targets for your goal (bulking/cutting/maintenance). Log your meals and workouts and track your progress.',
+      ctaSignup: 'Sign up free',
+      ctaLogin: 'Log in'
+    },
+    login: {
+      title: 'Log in',
+      email: 'Email',
+      password: 'Password',
+      submit: 'Log in',
+      noAccount: "Don't have an account?",
+      signupLink: 'Sign up',
+      errorInvalid: 'Incorrect email or password.'
+    },
+    signup: {
+      title: 'Sign up',
+      name: 'Name or nickname',
+      email: 'Email',
+      password: 'Password',
+      passwordHint:
+        'Use at least 8 characters (12+ recommended). A long, memorable passphrase is safer than a short one packed with symbols.',
+      submit: 'Sign up',
+      haveAccount: 'Already have an account?',
+      loginLink: 'Log in',
+      errorRequired: 'Please fill in every field.',
+      confirmEmailSent: 'We sent a confirmation email. Please verify it, then log in.'
+    },
+    profile: {
+      title: 'Set your goal',
+      description: 'Enter your body stats and goal to auto-calculate your daily calorie and macro targets.',
+      heightCm: 'Height (cm)',
+      weightKg: 'Weight (kg)',
+      age: 'Age',
+      sex: 'Sex',
+      sexMale: 'Male',
+      sexFemale: 'Female',
+      activityLevel: 'Activity level',
+      activitySedentary: 'Sedentary (desk job, no exercise)',
+      activityLight: 'Light (exercise 1-3x/week)',
+      activityModerate: 'Moderate (exercise 3-5x/week)',
+      activityActive: 'Active (exercise 6-7x/week)',
+      activityVeryActive: 'Very active (hard exercise or physical job daily)',
+      goalType: 'Goal',
+      goalCutting: 'Cutting (fat loss)',
+      goalBulking: 'Bulking (muscle gain)',
+      goalMaintenance: 'Maintenance',
+      goalMiniCut: 'Mini-cut (2-4 week aggressive cut)',
+      goalMiniBulk: 'Mini-bulk (2-4 week aggressive bulk)',
+      select: 'Select',
+      submit: 'Calculate targets',
+      errorRequired: 'Please fill in every field.'
+    },
+    dashboard: {
+      title: 'Home',
+      goalLine: (goalLabel: string, bmr: number, tdee: number, target: number) =>
+        `Goal: ${goalLabel} · BMR ${bmr}kcal · TDEE ${tdee}kcal · Target ${target}kcal`,
+      navGoalTitle: 'Goal',
+      navGoalDesc: 'Body stats and recalculate targets',
+      navDietTitle: 'Diet Log',
+      navDietDesc: 'Log what you ate today',
+      navWorkoutTitle: 'Workout Log',
+      navWorkoutDesc: 'Log your workout by body part',
+      todayIntake: "Today's intake",
+      calories: 'Calories',
+      protein: 'Protein',
+      carb: 'Carbs',
+      fat: 'Fat',
+      todayDietLog: "Today's diet log",
+      todayWorkoutLog: "Today's workout log",
+      viewAll: 'View all',
+      noLogsYet: 'No logs yet.',
+      food: 'Food',
+      part: 'Part',
+      exercise: 'Exercise',
+      content: 'Details',
+      cardioContent: (duration: number, distance: number | null) => `${duration}min${distance ? ` · ${distance}km` : ''}`,
+      strengthContent: (sets: number, reps: number, weight: number) => `${sets} sets × ${reps} reps × ${weight}kg`
+    },
+    diet: {
+      title: "Today's diet log",
+      mealName: 'Food name (e.g. Chicken salad)',
+      grams: 'Amount (g)',
+      aiCalc: 'Calculate with AI',
+      aiCalculating: 'Calculating...',
+      calories: 'Calories (kcal)',
+      protein: 'Protein (g)',
+      carb: 'Carbs (g)',
+      fat: 'Fat (g)',
+      submit: 'Add',
+      noLogs: 'No meals logged today.',
+      colFood: 'Food',
+      colCalories: 'Calories',
+      colProtein: 'Protein',
+      colCarb: 'Carbs',
+      colFat: 'Fat',
+      errorFoodRequired: 'Food name and calories are required.',
+      errorAiInput: 'Enter a food name and amount in grams.',
+      errorAiFail: "AI couldn't calculate this. Please enter it manually.",
+      errorAiException: 'Something went wrong calculating with AI. Please enter it manually.'
+    },
+    workout: {
+      title: "Today's workout log",
+      categoryChest: 'Chest',
+      categoryBack: 'Back',
+      categoryShoulders: 'Shoulders',
+      categoryArms: 'Arms',
+      categoryLegs: 'Legs',
+      categoryCore: 'Core',
+      categoryCardio: 'Cardio',
+      exerciseName: 'Exercise name',
+      durationMin: 'Duration (min)',
+      distanceKm: 'Distance (km, optional)',
+      sets: 'Sets',
+      reps: 'Reps',
+      weightKg: 'Weight (kg)',
+      submit: 'Add',
+      noLogs: 'No workouts logged today.',
+      colExercise: 'Exercise',
+      colDuration: 'Duration',
+      colDistance: 'Distance',
+      colSets: 'Sets',
+      colReps: 'Reps',
+      colWeight: 'Weight',
+      errorCategory: 'Invalid body part.',
+      errorExercise: 'Please enter an exercise name.',
+      errorDuration: 'Please enter the duration in minutes.',
+      errorSetsReps: 'Sets and reps are required.'
+    },
+    mypage: {
+      title: 'My Page',
+      accountInfo: 'Account info',
+      nameLabel: 'Name / nickname',
+      emailLabel: 'Email',
+      editProfile: 'Edit profile',
+      currentGoal: 'Current goal',
+      targetCalories: 'Target calories',
+      noGoal: 'No goal set yet.',
+      resetGoal: 'Reset your goal',
+      backHome: 'Back to home'
+    },
+    settings: {
+      title: 'Settings',
+      profile: 'Profile',
+      nameLabel: 'Name or nickname',
+      save: 'Save',
+      account: 'Account',
+      emailLabel: 'Email',
+      logout: 'Log out',
+      saved: 'Saved.',
+      errorNameRequired: 'Please enter a name or nickname.'
+    },
+    goalLabels: {
+      cutting: 'Cutting',
+      bulking: 'Bulking',
+      maintenance: 'Maintenance',
+      mini_cut: 'Mini-cut',
+      mini_bulk: 'Mini-bulk'
+    },
+    language: {
+      label: 'Language',
+      korean: '한국어',
+      english: 'English'
+    }
+  }
+};
+
+export type Dictionary = (typeof dictionary)['ko'];
+
+export async function getLocale(): Promise<Locale> {
+  const store = await cookies();
+  const value = store.get(LOCALE_COOKIE)?.value;
+  return value === 'en' ? 'en' : 'ko';
+}
+
+export function getDictionary(locale: Locale): Dictionary {
+  return dictionary[locale];
+}

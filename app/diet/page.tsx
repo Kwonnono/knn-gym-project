@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { DietLogForm } from '@/components/DietLogForm';
+import { getLocale, getDictionary } from '@/lib/i18n';
 
 function startOfToday(): string {
   const d = new Date();
@@ -27,30 +28,33 @@ export default async function DietPage({
     .gte('date', startOfToday())
     .order('created_at', { ascending: false });
 
+  const locale = await getLocale();
+  const t = getDictionary(locale);
+
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-3xl tracking-wide">오늘의 식단 기록</h1>
+      <h1 className="font-display text-3xl tracking-wide">{t.diet.title}</h1>
 
       {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
 
-      <DietLogForm />
+      <DietLogForm t={t.diet} />
 
       <div className="overflow-x-auto rounded-xl border border-neutral-200 shadow-sm dark:border-neutral-800">
         <table className="w-full text-sm">
           <thead className="bg-neutral-50 text-left text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
             <tr>
-              <th className="px-4 py-2 font-medium">음식</th>
-              <th className="px-4 py-2 font-medium">칼로리</th>
-              <th className="px-4 py-2 font-medium">단백질</th>
-              <th className="px-4 py-2 font-medium">탄수화물</th>
-              <th className="px-4 py-2 font-medium">지방</th>
+              <th className="px-4 py-2 font-medium">{t.diet.colFood}</th>
+              <th className="px-4 py-2 font-medium">{t.diet.colCalories}</th>
+              <th className="px-4 py-2 font-medium">{t.diet.colProtein}</th>
+              <th className="px-4 py-2 font-medium">{t.diet.colCarb}</th>
+              <th className="px-4 py-2 font-medium">{t.diet.colFat}</th>
             </tr>
           </thead>
           <tbody>
             {(!logs || logs.length === 0) && (
               <tr>
                 <td colSpan={5} className="px-4 py-6 text-center text-neutral-500 dark:text-neutral-400">
-                  오늘 기록된 식단이 없습니다.
+                  {t.diet.noLogs}
                 </td>
               </tr>
             )}

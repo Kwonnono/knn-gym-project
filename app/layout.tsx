@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import { Bebas_Neue, Black_Han_Sans, Inter, Noto_Sans_KR } from 'next/font/google';
 import { getCurrentUser } from '@/lib/supabase/server';
 import { logoutAction } from '@/app/actions';
+import { getLocale, getDictionary } from '@/lib/i18n';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { LanguageToggle } from '@/components/LanguageToggle';
 import { HomeIcon, TargetIcon, UtensilsIcon, DumbbellIcon, UserIcon, SettingsIcon } from '@/components/icons';
 import './globals.css';
 
@@ -27,12 +29,17 @@ const THEME_INIT_SCRIPT = `
 })();
 `;
 
+const iconLinkClass =
+  'rounded-lg p-1.5 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white';
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
+  const locale = await getLocale();
+  const t = getDictionary(locale);
   const displayName = (user?.user_metadata?.name as string | undefined) ?? user?.email;
 
   return (
-    <html lang="ko" className={`${displayFont.variable} ${displayFontKr.variable} ${bodyFont.variable} ${bodyFontKr.variable}`}>
+    <html lang={locale} className={`${displayFont.variable} ${displayFontKr.variable} ${bodyFont.variable} ${bodyFontKr.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
@@ -51,40 +58,41 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <nav className="flex items-center gap-4 text-sm">
             {user ? (
               <>
-                <a href="/dashboard" title="홈" aria-label="홈" className="rounded-lg p-1.5 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white">
+                <a href="/dashboard" title={t.nav.home} aria-label={t.nav.home} className={iconLinkClass}>
                   <HomeIcon />
                 </a>
-                <a href="/profile" title="목표 설정" aria-label="목표 설정" className="rounded-lg p-1.5 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white">
+                <a href="/profile" title={t.nav.goal} aria-label={t.nav.goal} className={iconLinkClass}>
                   <TargetIcon />
                 </a>
-                <a href="/diet" title="식단 기록" aria-label="식단 기록" className="rounded-lg p-1.5 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white">
+                <a href="/diet" title={t.nav.diet} aria-label={t.nav.diet} className={iconLinkClass}>
                   <UtensilsIcon />
                 </a>
-                <a href="/workout" title="운동 기록" aria-label="운동 기록" className="rounded-lg p-1.5 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white">
+                <a href="/workout" title={t.nav.workout} aria-label={t.nav.workout} className={iconLinkClass}>
                   <DumbbellIcon />
                 </a>
                 <span className="h-5 w-px bg-neutral-200 dark:bg-neutral-800" />
-                <a href="/mypage" title={`마이페이지 (${displayName})`} aria-label="마이페이지" className="rounded-lg p-1.5 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white">
+                <a href="/mypage" title={`${t.nav.mypage} (${displayName})`} aria-label={t.nav.mypage} className={iconLinkClass}>
                   <UserIcon />
                 </a>
-                <a href="/settings" title="설정" aria-label="설정" className="rounded-lg p-1.5 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white">
+                <a href="/settings" title={t.nav.settings} aria-label={t.nav.settings} className={iconLinkClass}>
                   <SettingsIcon />
                 </a>
                 <form action={logoutAction}>
-                  <button type="submit" className="text-neutral-500 hover:underline dark:text-neutral-400">로그아웃</button>
+                  <button type="submit" className="text-neutral-500 hover:underline dark:text-neutral-400">{t.nav.logout}</button>
                 </form>
               </>
             ) : (
               <>
-                <a href="/login" className="hover:underline">로그인</a>
+                <a href="/login" className="hover:underline">{t.nav.login}</a>
                 <a
                   href="/signup"
                   className="rounded-lg bg-black px-3 py-1.5 text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
                 >
-                  회원가입
+                  {t.nav.signup}
                 </a>
               </>
             )}
+            <LanguageToggle locale={locale} koreanLabel={t.language.korean} englishLabel={t.language.english} />
             <ThemeToggle />
           </nav>
         </header>

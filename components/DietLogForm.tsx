@@ -2,11 +2,12 @@
 
 import { useState, useTransition } from 'react';
 import { addDietLogAction, estimateNutritionAction } from '@/app/actions';
+import type { Dictionary } from '@/lib/i18n';
 
 const inputClass =
   'rounded-lg border border-neutral-300 bg-white px-3 py-2 transition-colors focus:border-neutral-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:focus:border-neutral-500';
 
-export function DietLogForm() {
+export function DietLogForm({ t }: { t: Dictionary['diet'] }) {
   const [mealName, setMealName] = useState('');
   const [grams, setGrams] = useState('');
   const [calories, setCalories] = useState('');
@@ -38,7 +39,7 @@ export function DietLogForm() {
     >
       <input
         name="mealName"
-        placeholder="음식 이름 (예: 닭가슴살 샐러드)"
+        placeholder={t.mealName}
         required
         value={mealName}
         onChange={(e) => setMealName(e.target.value)}
@@ -47,7 +48,7 @@ export function DietLogForm() {
       <div className="col-span-2 flex gap-2">
         <input
           type="number"
-          placeholder="양 (g)"
+          placeholder={t.grams}
           value={grams}
           onChange={(e) => setGrams(e.target.value)}
           className={`flex-1 ${inputClass}`}
@@ -58,14 +59,14 @@ export function DietLogForm() {
           disabled={isPending || !mealName || !grams}
           className="whitespace-nowrap rounded-lg border border-neutral-300 px-3 py-2 text-sm font-medium transition-colors hover:bg-neutral-100 disabled:opacity-50 dark:border-neutral-700 dark:hover:bg-neutral-900"
         >
-          {isPending ? '계산 중...' : 'AI로 계산하기'}
+          {isPending ? t.aiCalculating : t.aiCalc}
         </button>
       </div>
       {aiError && <p className="col-span-2 text-sm text-red-600 dark:text-red-400">{aiError}</p>}
       <input
         name="calories"
         type="number"
-        placeholder="칼로리 (kcal)"
+        placeholder={t.calories}
         required
         value={calories}
         onChange={(e) => setCalories(e.target.value)}
@@ -74,7 +75,7 @@ export function DietLogForm() {
       <input
         name="proteinG"
         type="number"
-        placeholder="단백질 (g)"
+        placeholder={t.protein}
         value={proteinG}
         onChange={(e) => setProteinG(e.target.value)}
         className={inputClass}
@@ -82,7 +83,7 @@ export function DietLogForm() {
       <input
         name="carbG"
         type="number"
-        placeholder="탄수화물 (g)"
+        placeholder={t.carb}
         value={carbG}
         onChange={(e) => setCarbG(e.target.value)}
         className={inputClass}
@@ -90,7 +91,7 @@ export function DietLogForm() {
       <input
         name="fatG"
         type="number"
-        placeholder="지방 (g)"
+        placeholder={t.fat}
         value={fatG}
         onChange={(e) => setFatG(e.target.value)}
         className={inputClass}
@@ -99,7 +100,7 @@ export function DietLogForm() {
         type="submit"
         className="col-span-2 rounded-lg bg-black px-3 py-2 font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
       >
-        추가하기
+        {t.submit}
       </button>
     </form>
   );
