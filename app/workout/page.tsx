@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getLocale, getDictionary, type Dictionary } from '@/lib/i18n';
 import { EXERCISE_PRESETS } from '@/lib/exercises';
 import { WorkoutForm } from '@/components/WorkoutForm';
+import { WorkoutLogTable } from '@/components/WorkoutLogTable';
 
 function startOfToday(): string {
   const d = new Date();
@@ -88,52 +89,26 @@ export default async function WorkoutPage({
         }}
       />
 
-      <div className="overflow-x-auto rounded-xl border border-neutral-200 shadow-sm dark:border-neutral-800">
-        <table className="w-full text-sm">
-          <thead className="bg-neutral-50 text-left text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
-            {isCardio ? (
-              <tr>
-                <th className="px-4 py-2 font-medium">{t.workout.colExercise}</th>
-                <th className="px-4 py-2 font-medium">{t.workout.colDuration}</th>
-                <th className="px-4 py-2 font-medium">{t.workout.colDistance}</th>
-              </tr>
-            ) : (
-              <tr>
-                <th className="px-4 py-2 font-medium">{t.workout.colExercise}</th>
-                <th className="px-4 py-2 font-medium">{t.workout.colSets}</th>
-                <th className="px-4 py-2 font-medium">{t.workout.colReps}</th>
-                <th className="px-4 py-2 font-medium">{t.workout.colWeight}</th>
-              </tr>
-            )}
-          </thead>
-          <tbody>
-            {(!logs || logs.length === 0) && (
-              <tr>
-                <td colSpan={isCardio ? 3 : 4} className="px-4 py-6 text-center text-neutral-500 dark:text-neutral-400">
-                  {t.workout.noLogs}
-                </td>
-              </tr>
-            )}
-            {(logs ?? []).map((log) => (
-              <tr key={log.id} className="border-t border-neutral-100 dark:border-neutral-900">
-                <td className="px-4 py-2 font-medium">{log.exercise}</td>
-                {isCardio ? (
-                  <>
-                    <td className="px-4 py-2">{log.duration_min}{locale === 'ko' ? '분' : 'min'}</td>
-                    <td className="px-4 py-2">{log.distance_km ? `${log.distance_km}km` : '-'}</td>
-                  </>
-                ) : (
-                  <>
-                    <td className="px-4 py-2">{log.sets}{locale === 'ko' ? '세트' : ''}</td>
-                    <td className="px-4 py-2">{log.reps}{locale === 'ko' ? '회' : ''}</td>
-                    <td className="px-4 py-2">{log.weight_kg}kg</td>
-                  </>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <WorkoutLogTable
+        logs={logs ?? []}
+        category={category}
+        isCardio={isCardio}
+        locale={locale}
+        labels={{
+          colExercise: t.workout.colExercise,
+          colDuration: t.workout.colDuration,
+          colDistance: t.workout.colDistance,
+          colSets: t.workout.colSets,
+          colReps: t.workout.colReps,
+          colWeight: t.workout.colWeight,
+          noLogs: t.workout.noLogs,
+          edit: t.workout.edit,
+          delete: t.workout.delete,
+          save: t.workout.save,
+          cancel: t.workout.cancel,
+          confirmDelete: t.workout.confirmDelete
+        }}
+      />
     </div>
   );
 }

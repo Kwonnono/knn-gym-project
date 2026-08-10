@@ -112,7 +112,12 @@ const dictionary = {
       colProtein: '단백질',
       colCarb: '탄수화물',
       colFat: '지방',
-      errorFoodRequired: '음식 이름과 칼로리는 필수입니다.'
+      errorFoodRequired: '음식 이름과 칼로리는 필수입니다.',
+      edit: '수정',
+      delete: '삭제',
+      save: '저장',
+      cancel: '취소',
+      confirmDelete: '이 식단 기록을 삭제하시겠습니까?'
     },
     workout: {
       title: '오늘의 운동 기록',
@@ -142,7 +147,12 @@ const dictionary = {
       errorCategory: '잘못된 운동 부위입니다.',
       errorExercise: '운동 이름을 입력해주세요.',
       errorDuration: '운동 시간(분)을 입력해주세요.',
-      errorSetsReps: '세트, 횟수는 필수입니다.'
+      errorSetsReps: '세트, 횟수는 필수입니다.',
+      edit: '수정',
+      delete: '삭제',
+      save: '저장',
+      cancel: '취소',
+      confirmDelete: '이 운동 기록을 삭제하시겠습니까?'
     },
     mypage: {
       title: '마이페이지',
@@ -292,7 +302,12 @@ const dictionary = {
       colProtein: 'Protein',
       colCarb: 'Carbs',
       colFat: 'Fat',
-      errorFoodRequired: 'Food name and calories are required.'
+      errorFoodRequired: 'Food name and calories are required.',
+      edit: 'Edit',
+      delete: 'Delete',
+      save: 'Save',
+      cancel: 'Cancel',
+      confirmDelete: 'Delete this meal log?'
     },
     workout: {
       title: "Today's workout log",
@@ -322,7 +337,12 @@ const dictionary = {
       errorCategory: 'Invalid body part.',
       errorExercise: 'Please enter an exercise name.',
       errorDuration: 'Please enter the duration in minutes.',
-      errorSetsReps: 'Sets and reps are required.'
+      errorSetsReps: 'Sets and reps are required.',
+      edit: 'Edit',
+      delete: 'Delete',
+      save: 'Save',
+      cancel: 'Cancel',
+      confirmDelete: 'Delete this workout log?'
     },
     mypage: {
       title: 'My Page',

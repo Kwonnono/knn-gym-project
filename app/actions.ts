@@ -168,6 +168,61 @@ export async function addDietLogAction(formData: FormData): Promise<void> {
   redirect('/diet');
 }
 
+export async function updateDietLogAction(formData: FormData): Promise<void> {
+  const t = getDictionary(await getLocale());
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
+
+  const id = String(formData.get('id') ?? '');
+  const redirectTo = String(formData.get('redirectTo') ?? '/diet');
+  const mealName = String(formData.get('mealName') ?? '').trim();
+  const calories = Number(formData.get('calories'));
+  const proteinG = Number(formData.get('proteinG') ?? 0);
+  const carbG = Number(formData.get('carbG') ?? 0);
+  const fatG = Number(formData.get('fatG') ?? 0);
+
+  if (!id || !mealName || !calories) {
+    redirect(`${redirectTo}?error=` + encodeURIComponent(t.diet.errorFoodRequired));
+  }
+
+  const { error } = await supabase
+    .from('diet_logs')
+    .update({ meal_name: mealName, calories, protein_g: proteinG, carb_g: carbG, fat_g: fatG })
+    .eq('id', id)
+    .eq('user_id', user!.id);
+
+  if (error) {
+    redirect(`${redirectTo}?error=` + encodeURIComponent(error.message));
+  }
+
+  revalidatePath('/diet');
+  revalidatePath('/diet/history');
+  revalidatePath('/dashboard');
+  redirect(redirectTo);
+}
+
+export async function deleteDietLogAction(formData: FormData): Promise<void> {
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
+
+  const id = String(formData.get('id') ?? '');
+  const redirectTo = String(formData.get('redirectTo') ?? '/diet');
+  if (id) {
+    await supabase.from('diet_logs').delete().eq('id', id).eq('user_id', user.id);
+  }
+
+  revalidatePath('/diet');
+  revalidatePath('/diet/history');
+  revalidatePath('/dashboard');
+  redirect(redirectTo);
+}
+
 const WORKOUT_CATEGORIES = ['chest', 'back', 'shoulders', 'arms', 'legs', 'core', 'cardio'] as const;
 export type WorkoutCategory = (typeof WORKOUT_CATEGORIES)[number];
 
@@ -229,6 +284,86 @@ export async function addWorkoutLogAction(formData: FormData): Promise<void> {
     if (error) {
       redirect(`/workout?category=${category}&error=` + encodeURIComponent(error.message));
     }
+  }
+
+  revalidatePath('/workout');
+  revalidatePath('/dashboard');
+  redirect(`/workout?category=${category}`);
+}
+
+export async function updateWorkoutLogAction(formData: FormData): Promise<void> {
+  const t = getDictionary(await getLocale());
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
+
+  const id = String(formData.get('id') ?? '');
+  const category = String(formData.get('category') ?? '') as WorkoutCategory;
+  if (!WORKOUT_CATEGORIES.includes(category)) {
+    redirect('/workout?error=' + encodeURIComponent(t.workout.errorCategory));
+  }
+  const redirectTo = `/workout?category=${category}`;
+
+  const exercise = String(formData.get('exercise') ?? '').trim();
+  if (!id || !exercise) {
+    redirect(`${redirectTo}&error=` + encodeURIComponent(t.workout.errorExercise));
+  }
+
+  if (category === 'cardio') {
+    const durationMin = Number(formData.get('durationMin'));
+    const distanceKm = formData.get('distanceKm') ? Number(formData.get('distanceKm')) : null;
+
+    if (!durationMin) {
+      redirect(`${redirectTo}&error=` + encodeURIComponent(t.workout.errorDuration));
+    }
+
+    const { error } = await supabase
+      .from('workout_logs')
+      .update({ exercise, duration_min: durationMin, distance_km: distanceKm })
+      .eq('id', id)
+      .eq('user_id', user!.id);
+
+    if (error) {
+      redirect(`${redirectTo}&error=` + encodeURIComponent(error.message));
+    }
+  } else {
+    const sets = Number(formData.get('sets'));
+    const reps = Number(formData.get('reps'));
+    const weightKg = formData.get('weightKg') ? Number(formData.get('weightKg')) : 0;
+
+    if (!sets || !reps) {
+      redirect(`${redirectTo}&error=` + encodeURIComponent(t.workout.errorSetsReps));
+    }
+
+    const { error } = await supabase
+      .from('workout_logs')
+      .update({ exercise, sets, reps, weight_kg: weightKg })
+      .eq('id', id)
+      .eq('user_id', user!.id);
+
+    if (error) {
+      redirect(`${redirectTo}&error=` + encodeURIComponent(error.message));
+    }
+  }
+
+  revalidatePath('/workout');
+  revalidatePath('/dashboard');
+  redirect(redirectTo);
+}
+
+export async function deleteWorkoutLogAction(formData: FormData): Promise<void> {
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
+
+  const id = String(formData.get('id') ?? '');
+  const category = String(formData.get('category') ?? 'chest');
+  if (id) {
+    await supabase.from('workout_logs').delete().eq('id', id).eq('user_id', user.id);
   }
 
   revalidatePath('/workout');

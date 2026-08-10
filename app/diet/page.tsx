@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getLocale, getDictionary } from '@/lib/i18n';
 import { DietForm } from '@/components/DietForm';
+import { DietLogTable } from '@/components/DietLogTable';
 
 function startOfToday(): string {
   const d = new Date();
@@ -49,37 +50,23 @@ export default async function DietPage({
         }}
       />
 
-      <div className="overflow-x-auto rounded-xl border border-neutral-200 shadow-sm dark:border-neutral-800">
-        <table className="w-full text-sm">
-          <thead className="bg-neutral-50 text-left text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400">
-            <tr>
-              <th className="px-4 py-2 font-medium">{t.diet.colFood}</th>
-              <th className="px-4 py-2 font-medium">{t.diet.colCalories}</th>
-              <th className="px-4 py-2 font-medium">{t.diet.colProtein}</th>
-              <th className="px-4 py-2 font-medium">{t.diet.colCarb}</th>
-              <th className="px-4 py-2 font-medium">{t.diet.colFat}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(!logs || logs.length === 0) && (
-              <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-neutral-500 dark:text-neutral-400">
-                  {t.diet.noLogs}
-                </td>
-              </tr>
-            )}
-            {(logs ?? []).map((log) => (
-              <tr key={log.id} className="border-t border-neutral-100 dark:border-neutral-900">
-                <td className="px-4 py-2 font-medium">{log.meal_name}</td>
-                <td className="px-4 py-2">{log.calories}kcal</td>
-                <td className="px-4 py-2">{log.protein_g}g</td>
-                <td className="px-4 py-2">{log.carb_g}g</td>
-                <td className="px-4 py-2">{log.fat_g}g</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <DietLogTable
+        logs={logs ?? []}
+        redirectTo="/diet"
+        labels={{
+          colFood: t.diet.colFood,
+          colCalories: t.diet.colCalories,
+          colProtein: t.diet.colProtein,
+          colCarb: t.diet.colCarb,
+          colFat: t.diet.colFat,
+          noLogs: t.diet.noLogs,
+          edit: t.diet.edit,
+          delete: t.diet.delete,
+          save: t.diet.save,
+          cancel: t.diet.cancel,
+          confirmDelete: t.diet.confirmDelete
+        }}
+      />
     </div>
   );
 }
