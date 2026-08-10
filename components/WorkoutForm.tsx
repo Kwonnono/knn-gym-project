@@ -18,12 +18,14 @@ export function WorkoutForm({
   date,
   isCardio,
   exercisePresets,
+  lastPerformance,
   labels
 }: {
   category: string;
   date?: string;
   isCardio: boolean;
   exercisePresets: string[];
+  lastPerformance?: Record<string, { reps: number; weightKg: number }[]>;
   labels: {
     exerciseName: string;
     selectExercise: string;
@@ -63,7 +65,20 @@ export function WorkoutForm({
     >
       <input type="hidden" name="category" value={category} />
       {date && <input type="hidden" name="date" value={date} />}
-      <select value={selected} onChange={(e) => setSelected(e.target.value)} className={`col-span-3 ${inputClass}`}>
+      <select
+        value={selected}
+        onChange={(e) => {
+          const value = e.target.value;
+          setSelected(value);
+          const last = lastPerformance?.[value];
+          if (last && last.length > 0) {
+            setSets(last.map((s) => ({ reps: String(s.reps), weightKg: String(s.weightKg) })));
+          } else if (value !== CUSTOM_VALUE) {
+            setSets([{ reps: '', weightKg: '' }]);
+          }
+        }}
+        className={`col-span-3 ${inputClass}`}
+      >
         <option value="" disabled>
           {labels.selectExercise}
         </option>

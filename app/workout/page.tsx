@@ -64,6 +64,26 @@ export default async function WorkoutPage({
   if (!isAll) query = query.eq('category', category);
   const { data: logs } = await query.order('created_at', { ascending: false });
 
+  let lastPerformance: Record<string, { reps: number; weightKg: number }[]> = {};
+  if (!isAll && !isCardio) {
+    const { data: historyLogs } = await supabase
+      .from('workout_logs')
+      .select('exercise, sets_data, sets, reps, weight_kg, date')
+      .eq('user_id', user.id)
+      .eq('category', category)
+      .order('date', { ascending: false })
+      .limit(100);
+
+    for (const log of historyLogs ?? []) {
+      if (lastPerformance[log.exercise]) continue;
+      if (log.sets_data && log.sets_data.length > 0) {
+        lastPerformance[log.exercise] = log.sets_data;
+      } else if (log.reps != null && log.weight_kg != null) {
+        lastPerformance[log.exercise] = [{ reps: log.reps, weightKg: log.weight_kg }];
+      }
+    }
+  }
+
   const dateSuffix = `&date=${selectedDateKey}`;
 
   return (
@@ -153,6 +173,7 @@ export default async function WorkoutPage({
             date={selectedDateKey}
             isCardio={isCardio}
             exercisePresets={EXERCISE_PRESETS[category] ?? []}
+            lastPerformance={lastPerformance}
             labels={{
               exerciseName: t.workout.exerciseName,
               selectExercise: t.workout.selectExercise,
