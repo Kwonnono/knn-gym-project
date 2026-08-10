@@ -115,14 +115,7 @@ export default async function DashboardPage({
             <DateNav date={selectedDateKey} todayLabel={t.dashboard.todayLabel} />
           </div>
           <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-            {t.dashboard.goalLine(
-              goalLabel,
-              goal.bmr,
-              goal.target_calories,
-              goal.target_protein_g,
-              goal.target_carb_g,
-              goal.target_fat_g
-            )}
+            {t.dashboard.goalLine(goalLabel, goal.bmr)}
           </p>
         </div>
         <a

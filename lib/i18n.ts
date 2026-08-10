@@ -80,8 +80,7 @@ const dictionary = {
     },
     dashboard: {
       title: 'Dashboard',
-      goalLine: (goalLabel: string, bmr: number, target: number, protein: number, carb: number, fat: number) =>
-        `목표: ${goalLabel} · BMR(기초대사량) ${bmr}kcal · 목표 칼로리 ${target}kcal · 단백질 ${protein}g · 탄수화물 ${carb}g · 지방 ${fat}g`,
+      goalLine: (goalLabel: string, bmr: number) => `목표: ${goalLabel} · BMR(기초대사량) ${bmr}kcal`,
       navGoalTitle: '목표 설정',
       todayIntake: '오늘 섭취',
       remainingCalories: '남은 칼로리',
@@ -302,8 +301,7 @@ const dictionary = {
     },
     dashboard: {
       title: 'Dashboard',
-      goalLine: (goalLabel: string, bmr: number, target: number, protein: number, carb: number, fat: number) =>
-        `Goal: ${goalLabel} · BMR (Basal Metabolic Rate) ${bmr}kcal · Target ${target}kcal · Protein ${protein}g · Carbs ${carb}g · Fat ${fat}g`,
+      goalLine: (goalLabel: string, bmr: number) => `Goal: ${goalLabel} · BMR (Basal Metabolic Rate) ${bmr}kcal`,
       navGoalTitle: 'Goal',
       todayIntake: "Today's intake",
       remainingCalories: 'Calories remaining',

@@ -6,6 +6,7 @@ import { getLocale, getDictionary } from '@/lib/i18n';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { LanguageToggle } from '@/components/LanguageToggle';
 import { NavMenu } from '@/components/NavMenu';
+import { Avatar } from '@/components/Avatar';
 import './globals.css';
 
 // Bebas Neue/Inter는 라틴 문자만 지원하므로, 같은 톤의 한글 전용 폰트를 폴백으로 묶어 씁니다.
@@ -33,6 +34,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const user = await getCurrentUser();
   const locale = await getLocale();
   const t = getDictionary(locale);
+  const displayName = (user?.user_metadata?.name as string | undefined) ?? user?.email ?? '';
 
   return (
     <html lang={locale} className={`${displayFont.variable} ${displayFontKr.variable} ${bodyFont.variable} ${bodyFontKr.variable}`}>
@@ -53,6 +55,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <span className="font-display text-2xl tracking-wide">BULK &amp; CUT</span>
           </a>
           <nav className="flex items-center justify-self-end gap-4 text-sm">
+            {user ? (
+              <a
+                href="/mypage"
+                className="flex items-center gap-2 rounded-lg px-1.5 py-1 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-900"
+              >
+                <Avatar name={displayName} />
+                <span className="hidden text-sm font-medium sm:inline">{displayName}</span>
+              </a>
+            ) : null}
             {user ? (
               <NavMenu
                 items={[
