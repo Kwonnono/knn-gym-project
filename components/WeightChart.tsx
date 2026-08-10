@@ -17,7 +17,7 @@ export function WeightChart({ points, locale = 'ko' }: { points: WeightPoint[]; 
   const width = 320;
   const height = 130;
   const padX = 28;
-  const padTop = 22;
+  const padTop = 30;
   const padBottom = 20;
   const chartHeight = height - padTop - padBottom;
 
@@ -59,7 +59,7 @@ export function WeightChart({ points, locale = 'ko' }: { points: WeightPoint[]; 
               <>
                 <text
                   x={c.x}
-                  y={c.y - 9}
+                  y={c.y - 13}
                   textAnchor="middle"
                   fontSize="13"
                   className="fill-neutral-700 font-semibold dark:fill-neutral-200"

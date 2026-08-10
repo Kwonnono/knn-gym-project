@@ -35,6 +35,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const locale = await getLocale();
   const t = getDictionary(locale);
   const displayName = (user?.user_metadata?.name as string | undefined) ?? user?.email ?? '';
+  const avatarUrl = user?.user_metadata?.avatar_url as string | undefined;
 
   return (
     <html
@@ -46,7 +47,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
       <body className="font-sans">
-        <header className="grid grid-cols-[1fr_auto_1fr] items-center border-b border-neutral-200 bg-white px-6 py-4 dark:border-neutral-800 dark:bg-black">
+        <header className="relative z-30 grid grid-cols-[1fr_auto_1fr] items-center border-b border-neutral-200 bg-white px-6 py-4 dark:border-neutral-800 dark:bg-black">
           <div aria-hidden="true" />
           <a href={user ? '/dashboard' : '/'} className="flex flex-col items-center justify-self-center gap-1 leading-none">
             <svg width="42" height="20" viewBox="0 0 34 16" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0">
@@ -61,10 +62,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <nav className="flex items-center justify-self-end gap-4 text-sm">
             {user ? (
               <a
-                href="/profile"
+                href="/mypage"
                 className="flex items-center gap-2 rounded-lg px-1.5 py-1 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-900"
               >
-                <Avatar name={displayName} />
+                <Avatar name={displayName} avatarUrl={avatarUrl} />
                 <span className="hidden text-sm font-medium sm:inline">{displayName}</span>
               </a>
             ) : null}

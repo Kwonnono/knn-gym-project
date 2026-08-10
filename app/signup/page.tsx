@@ -32,6 +32,22 @@ export default async function SignupPage({
           />
           <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{t.signup.passwordHint}</p>
         </div>
+        <div className="space-y-2 text-sm">
+          <label className="flex items-center gap-2">
+            <input type="checkbox" name="agreeTerms" required className="h-4 w-4" />
+            <span>{t.signup.agreeTerms}</span>
+            <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline">
+              {t.signup.viewLink}
+            </a>
+          </label>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" name="agreePrivacy" required className="h-4 w-4" />
+            <span>{t.signup.agreePrivacy}</span>
+            <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline">
+              {t.signup.viewLink}
+            </a>
+          </label>
+        </div>
         <button
           type="submit"
           className="w-full rounded-lg bg-black px-3 py-2 font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"

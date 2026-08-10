@@ -5,6 +5,8 @@ import { getLocale, getDictionary, type Dictionary } from '@/lib/i18n';
 import { EXERCISE_PRESETS } from '@/lib/exercises';
 import { WorkoutForm } from '@/components/WorkoutForm';
 import { WorkoutLogTable } from '@/components/WorkoutLogTable';
+import { DeleteButton } from '@/components/DeleteButton';
+import { deleteWorkoutLogAction } from '@/app/actions';
 import { getSetCount, getFirstSetDetail } from '@/lib/workoutVolume';
 
 function pad(n: number): string {
@@ -152,10 +154,22 @@ export default async function WorkoutPage({
                               ? t.dashboard.cardioContent(log.duration_min, log.distance_km)
                               : detail && t.dashboard.strengthContent(getSetCount(log), detail.weightKg, detail.reps)}
                           </td>
-                          <td className="px-4 py-2 text-right">
+                          <td className="px-4 py-2 text-right whitespace-nowrap">
                             <a href={`/workout?category=${log.category}${dateSuffix}`} className="text-xs underline">
                               {t.workout.edit}
                             </a>
+                            <DeleteButton
+                              action={deleteWorkoutLogAction}
+                              hiddenFields={{
+                                id: log.id,
+                                category: log.category,
+                                date: selectedDateKey,
+                                redirectTo: `/workout?category=all${dateSuffix}`
+                              }}
+                              confirmMessage={t.workout.confirmDelete}
+                              label={t.workout.delete}
+                              className="ml-2 text-xs text-red-600 underline dark:text-red-400"
+                            />
                           </td>
                         </tr>
                       );

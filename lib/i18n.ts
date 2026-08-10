@@ -42,7 +42,11 @@ const dictionary = {
       haveAccount: '이미 계정이 있으신가요?',
       loginLink: '로그인',
       errorRequired: '모든 항목을 입력해주세요.',
-      confirmEmailSent: '가입 확인 이메일을 보냈습니다. 이메일을 확인한 뒤 로그인해주세요.'
+      confirmEmailSent: '가입 확인 이메일을 보냈습니다. 이메일을 확인한 뒤 로그인해주세요.',
+      agreeTerms: '서비스 이용약관에 동의합니다 (필수)',
+      agreePrivacy: '개인정보 수집 및 이용에 동의합니다 (필수)',
+      viewLink: '보기',
+      errorConsentRequired: '이용약관과 개인정보 수집·이용에 모두 동의해야 가입할 수 있습니다.'
     },
     profile: {
       title: '목표 설정',
@@ -214,7 +218,10 @@ const dictionary = {
       backHome: '홈으로 돌아가기',
       streakDays: '연속 기록일',
       freePlan: 'Free Plan',
-      proComingSoon: 'Pro (준비 중)'
+      proComingSoon: 'Pro (준비 중)',
+      changePhoto: '사진 변경',
+      uploadingPhoto: '업로드 중...',
+      errorImageType: '이미지 파일만 업로드할 수 있습니다.'
     },
     settings: {
       title: '설정',
@@ -238,6 +245,29 @@ const dictionary = {
       label: '언어',
       korean: '한국어',
       english: 'English'
+    },
+    legal: {
+      back: '← 돌아가기'
+    },
+    terms: {
+      title: '서비스 이용약관',
+      paragraphs: [
+        '제1조 (목적) 이 약관은 Bulk & Cut(이하 "서비스")의 이용조건 및 절차, 회원과 서비스 운영자의 권리·의무 및 책임사항을 규정함을 목적으로 합니다.',
+        '제2조 (회원가입) 이용자는 서비스가 정한 절차에 따라 회원가입을 신청하며, 서비스가 이를 승낙함으로써 회원가입이 완료됩니다.',
+        '제3조 (서비스의 제공) 서비스는 이용자가 입력한 신체 정보를 바탕으로 칼로리 및 영양소 목표치를 계산하고, 식단·운동·체중 기록 관리 기능을 제공합니다.',
+        '제4조 (면책조항) 서비스가 제공하는 칼로리 및 영양 정보는 참고용이며 의학적 조언을 대체하지 않습니다. 건강 상태에 따라 전문가와 상담 후 이용하시기 바랍니다.',
+        '제5조 (약관의 변경) 서비스는 관련 법령을 위배하지 않는 범위에서 이 약관을 변경할 수 있으며, 변경 시 서비스 내 공지합니다.'
+      ]
+    },
+    privacy: {
+      title: '개인정보 처리방침',
+      paragraphs: [
+        '1. 수집하는 개인정보 항목: 이메일, 이름/닉네임, 비밀번호(암호화 저장), 신체 정보(키/몸무게/나이/성별 등), 식단·운동·체중 기록',
+        '2. 수집 및 이용 목적: 회원 식별 및 인증, 맞춤형 칼로리·영양소 목표 계산, 서비스 이용 기록 관리',
+        '3. 보유 및 이용 기간: 회원 탈퇴 시까지 보관하며, 탈퇴 시 지체 없이 파기합니다.',
+        '4. 제3자 제공: 법령에 근거가 없는 한 이용자의 개인정보를 외부에 제공하지 않습니다.',
+        '5. 이용자의 권리: 이용자는 언제든지 자신의 개인정보를 조회·수정·삭제할 수 있으며, 설정 페이지에서 직접 관리할 수 있습니다.'
+      ]
     }
   },
   en: {
@@ -279,7 +309,11 @@ const dictionary = {
       haveAccount: 'Already have an account?',
       loginLink: 'Log in',
       errorRequired: 'Please fill in every field.',
-      confirmEmailSent: 'We sent a confirmation email. Please verify it, then log in.'
+      confirmEmailSent: 'We sent a confirmation email. Please verify it, then log in.',
+      agreeTerms: 'I agree to the Terms of Service (required)',
+      agreePrivacy: 'I agree to the collection and use of my personal information (required)',
+      viewLink: 'View',
+      errorConsentRequired: 'You must agree to both the Terms of Service and the Privacy Policy to sign up.'
     },
     profile: {
       title: 'Set your goal',
@@ -451,7 +485,10 @@ const dictionary = {
       backHome: 'Back to home',
       streakDays: 'Day streak',
       freePlan: 'Free Plan',
-      proComingSoon: 'Pro (coming soon)'
+      proComingSoon: 'Pro (coming soon)',
+      changePhoto: 'Change photo',
+      uploadingPhoto: 'Uploading...',
+      errorImageType: 'Please upload an image file.'
     },
     settings: {
       title: 'Settings',
@@ -475,6 +512,29 @@ const dictionary = {
       label: 'Language',
       korean: '한국어',
       english: 'English'
+    },
+    legal: {
+      back: '← Back'
+    },
+    terms: {
+      title: 'Terms of Service',
+      paragraphs: [
+        'Article 1 (Purpose) These terms govern the conditions and procedures for using Bulk & Cut ("the Service") and the rights, obligations, and responsibilities of members and the Service operator.',
+        'Article 2 (Membership) Users apply for membership following the procedure set by the Service, and membership is completed once the Service accepts the application.',
+        'Article 3 (Provision of the Service) The Service calculates calorie and macronutrient targets based on the body stats you enter, and provides diet, workout, and weight logging features.',
+        'Article 4 (Disclaimer) Calorie and nutrition information provided by the Service is for reference only and does not replace medical advice. Please consult a professional based on your own health condition.',
+        'Article 5 (Changes to these Terms) The Service may amend these terms within the bounds of applicable law, and will announce any changes within the Service.'
+      ]
+    },
+    privacy: {
+      title: 'Privacy Policy',
+      paragraphs: [
+        '1. Personal information collected: email, name/nickname, password (stored encrypted), body stats (height/weight/age/sex, etc.), diet/workout/weight logs.',
+        '2. Purpose of collection and use: member identification and authentication, personalized calorie/macro target calculation, and managing your usage records.',
+        '3. Retention period: retained until account deletion, and destroyed without delay upon deletion.',
+        '4. Disclosure to third parties: your personal information is not shared externally unless required by law.',
+        '5. Your rights: you may view, edit, or delete your personal information at any time, and can manage it directly from the settings page.'
+      ]
     }
   }
 };

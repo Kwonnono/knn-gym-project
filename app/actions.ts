@@ -19,9 +19,14 @@ export async function signupAction(formData: FormData): Promise<void> {
   const name = String(formData.get('name') ?? '').trim();
   const email = String(formData.get('email') ?? '').trim().toLowerCase();
   const password = String(formData.get('password') ?? '');
+  const agreeTerms = formData.get('agreeTerms') === 'on';
+  const agreePrivacy = formData.get('agreePrivacy') === 'on';
 
   if (!name || !email || !password) {
     redirect('/signup?error=' + encodeURIComponent(t.signup.errorRequired));
+  }
+  if (!agreeTerms || !agreePrivacy) {
+    redirect('/signup?error=' + encodeURIComponent(t.signup.errorConsentRequired));
   }
   const passwordCheck = validatePassword(password);
   if (!passwordCheck.valid) {
@@ -127,7 +132,6 @@ export async function saveGoalAction(formData: FormData): Promise<void> {
     activityLevel,
     goalType,
     weightChangeSpeed,
-    targetSkeletalMuscleMassKg: targetSkeletalMuscleMassKg ?? undefined,
     bodyFatPercent: bodyFatPercent ?? undefined
   });
 
@@ -505,11 +509,14 @@ export async function deleteWorkoutLogAction(formData: FormData): Promise<void> 
   const id = String(formData.get('id') ?? '');
   const category = String(formData.get('category') ?? 'chest');
   const dateKey = formData.get('date') ? String(formData.get('date')) : null;
+  const redirectTo = formData.get('redirectTo')
+    ? String(formData.get('redirectTo'))
+    : `/workout?category=${category}${dateKey ? `&date=${dateKey}` : ''}`;
   if (id) {
     await supabase.from('workout_logs').delete().eq('id', id).eq('user_id', user.id);
   }
 
   revalidatePath('/workout');
   revalidatePath('/dashboard');
-  redirect(`/workout?category=${category}${dateKey ? `&date=${dateKey}` : ''}`);
+  redirect(redirectTo);
 }

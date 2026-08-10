@@ -1,20 +1,45 @@
-const COLORS = ['#f43f5e', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6', '#6366f1'];
+import { UserIcon } from '@/components/icons';
 
-function colorFor(seed: string): string {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i += 1) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
-  return COLORS[hash % COLORS.length];
-}
+const SIZE_CLASSES = {
+  sm: 'h-8 w-8',
+  lg: 'h-16 w-16'
+} as const;
 
-export function Avatar({ name, className }: { name: string; className?: string }) {
-  const initial = name.trim().charAt(0).toUpperCase() || '?';
+const ICON_SIZE_CLASSES = {
+  sm: 'h-5 w-5',
+  lg: 'h-8 w-8'
+} as const;
+
+export function Avatar({
+  name,
+  avatarUrl,
+  size = 'sm',
+  className
+}: {
+  name: string;
+  avatarUrl?: string | null;
+  size?: keyof typeof SIZE_CLASSES;
+  className?: string;
+}) {
+  const sizeClass = SIZE_CLASSES[size];
+
+  if (avatarUrl) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return (
+      <img
+        src={avatarUrl}
+        alt={name}
+        className={`${sizeClass} shrink-0 rounded-full object-cover ${className ?? ''}`}
+      />
+    );
+  }
+
   return (
     <span
-      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-medium text-white ${className ?? ''}`}
-      style={{ backgroundColor: colorFor(name) }}
+      className={`flex ${sizeClass} shrink-0 items-center justify-center rounded-full bg-neutral-200 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400 ${className ?? ''}`}
       aria-hidden="true"
     >
-      {initial}
+      <UserIcon className={ICON_SIZE_CLASSES[size]} />
     </span>
   );
 }

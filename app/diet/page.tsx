@@ -86,6 +86,7 @@ export default async function DietPage({
       <DietForm
         date={selectedDateKey}
         redirectTo={redirectTo}
+        logCount={(logs ?? []).length}
         labels={{
           mealName: t.diet.mealName,
           mealNumberLabel: t.diet.mealNumberLabel,

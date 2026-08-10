@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { calculateTargets } from '@/lib/calc';
 import { getLocale, getDictionary } from '@/lib/i18n';
+import { AvatarUploader } from '@/components/AvatarUploader';
 
 function toDateKey(iso: string): string {
   return new Date(iso).toISOString().slice(0, 10);
@@ -43,7 +44,6 @@ export default async function MyPage() {
         activityLevel: goal.activity_level,
         goalType: goal.goal_type,
         weightChangeSpeed: goal.weight_change_speed ?? undefined,
-        targetSkeletalMuscleMassKg: goal.target_skeletal_muscle_mass_kg ?? undefined,
         bodyFatPercent: goal.body_fat_percent ?? undefined
       })
     : null;
@@ -56,6 +56,15 @@ export default async function MyPage() {
         <h1 className="font-display text-3xl tracking-wide">{t.mypage.title}</h1>
         <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{displayName}</p>
       </div>
+
+      <AvatarUploader
+        userId={user.id}
+        name={displayName ?? ''}
+        avatarUrl={user.user_metadata?.avatar_url as string | undefined}
+        changeLabel={t.mypage.changePhoto}
+        uploadingLabel={t.mypage.uploadingPhoto}
+        errorImageTypeLabel={t.mypage.errorImageType}
+      />
 
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-xl border border-neutral-200 bg-white p-4 text-center shadow-sm dark:border-neutral-800 dark:bg-neutral-950">

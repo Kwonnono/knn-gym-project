@@ -8,10 +8,12 @@ import { getLocale, getDictionary, type Dictionary } from '@/lib/i18n';
 import { getSetCount, getFirstSetDetail } from '@/lib/workoutVolume';
 import { WeightChart } from '@/components/WeightChart';
 import { groupDietLogsByMeal } from '@/lib/mealGroups';
-import { addWeightLogAction } from '@/app/actions';
+import { addWeightLogAction, deleteWorkoutLogAction } from '@/app/actions';
 import { DateNav } from '@/components/DateNav';
 import { OnboardingBanner } from '@/components/OnboardingBanner';
 import { HelpModal } from '@/components/HelpModal';
+import { DismissibleTip } from '@/components/DismissibleTip';
+import { DeleteButton } from '@/components/DeleteButton';
 
 function pad(n: number): string {
   return String(n).padStart(2, '0');
@@ -59,7 +61,6 @@ export default async function DashboardPage({
     activityLevel: goal.activity_level,
     goalType: goal.goal_type,
     weightChangeSpeed: goal.weight_change_speed ?? undefined,
-    targetSkeletalMuscleMassKg: goal.target_skeletal_muscle_mass_kg ?? undefined,
     bodyFatPercent: goal.body_fat_percent ?? undefined
   });
 
@@ -199,9 +200,12 @@ export default async function DashboardPage({
             </div>
 
             {proteinTipPacks !== null && (
-              <p className="rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700 dark:bg-rose-950 dark:text-rose-300">
-                {t.dashboard.proteinTip(remainingProteinG, proteinTipPacks)}
-              </p>
+              <DismissibleTip
+                storageKey={`protein-tip-dismissed-${selectedDateKey}`}
+                message={t.dashboard.proteinTip(remainingProteinG, proteinTipPacks)}
+                closeLabel={t.dashboard.onboardingDismiss}
+                className="rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700 dark:bg-rose-950 dark:text-rose-300"
+              />
             )}
           </div>
 
@@ -272,12 +276,13 @@ export default async function DashboardPage({
                     <th className="px-4 py-2 font-medium">{t.dashboard.part}</th>
                     <th className="px-4 py-2 font-medium">{t.dashboard.exercise}</th>
                     <th className="px-4 py-2 font-medium">{t.dashboard.content}</th>
+                    <th className="px-4 py-2 font-medium" />
                   </tr>
                 </thead>
                 <tbody>
                   {recentWorkoutLogs.length === 0 && (
                     <tr>
-                      <td colSpan={3} className="px-4 py-6 text-center text-neutral-500 dark:text-neutral-400">
+                      <td colSpan={4} className="px-4 py-6 text-center text-neutral-500 dark:text-neutral-400">
                         {t.dashboard.noLogsYet}
                       </td>
                     </tr>
@@ -292,6 +297,23 @@ export default async function DashboardPage({
                           {log.category === 'cardio'
                             ? t.dashboard.cardioContent(log.duration_min, log.distance_km)
                             : setDetail && t.dashboard.strengthContent(getSetCount(log), setDetail.weightKg, setDetail.reps)}
+                        </td>
+                        <td className="px-4 py-2 text-right whitespace-nowrap">
+                          <a href={`/workout?category=${log.category}&date=${selectedDateKey}`} className="text-xs underline">
+                            {t.workout.edit}
+                          </a>
+                          <DeleteButton
+                            action={deleteWorkoutLogAction}
+                            hiddenFields={{
+                              id: log.id,
+                              category: log.category,
+                              date: selectedDateKey,
+                              redirectTo: `/dashboard?date=${selectedDateKey}`
+                            }}
+                            confirmMessage={t.workout.confirmDelete}
+                            label={t.workout.delete}
+                            className="ml-2 text-xs text-red-600 underline dark:text-red-400"
+                          />
                         </td>
                       </tr>
                     );
