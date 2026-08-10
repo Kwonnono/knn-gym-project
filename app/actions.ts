@@ -2,58 +2,10 @@
 
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import Anthropic from '@anthropic-ai/sdk';
-import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
-import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { calculateTargets, type ActivityLevel, type GoalType, type Sex } from '@/lib/calc';
 import { validatePassword } from '@/lib/passwordPolicy';
 import { getLocale, getDictionary } from '@/lib/i18n';
-
-const anthropic = new Anthropic();
-
-const NutritionSchema = z.object({
-  calories: z.number().describe('총 칼로리 (kcal)'),
-  proteinG: z.number().describe('단백질 (g)'),
-  carbG: z.number().describe('탄수화물 (g)'),
-  fatG: z.number().describe('지방 (g)')
-});
-
-export async function estimateNutritionAction(
-  foodName: string,
-  grams: number
-): Promise<{ calories: number; proteinG: number; carbG: number; fatG: number } | { error: string }> {
-  const t = getDictionary(await getLocale());
-
-  if (!foodName.trim() || !grams) {
-    return { error: t.diet.errorAiInput };
-  }
-
-  try {
-    const response = await anthropic.messages.parse({
-      model: 'claude-opus-5',
-      max_tokens: 1024,
-      output_config: {
-        effort: 'low',
-        format: zodOutputFormat(NutritionSchema)
-      },
-      messages: [
-        {
-          role: 'user',
-          content: `"${foodName}" ${grams}g의 예상 영양 성분을 일반적인 음식 영양 데이터베이스 기준으로 추정해줘.`
-        }
-      ]
-    });
-
-    if (response.stop_reason === 'refusal' || !response.parsed_output) {
-      return { error: t.diet.errorAiFail };
-    }
-
-    return response.parsed_output;
-  } catch {
-    return { error: t.diet.errorAiException };
-  }
-}
 
 export async function signupAction(formData: FormData): Promise<void> {
   const t = getDictionary(await getLocale());

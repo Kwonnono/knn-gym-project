@@ -97,9 +97,6 @@ const dictionary = {
     diet: {
       title: '오늘의 식단 기록',
       mealName: '음식 이름 (예: 닭가슴살 샐러드)',
-      grams: '양 (g)',
-      aiCalc: 'AI로 계산하기',
-      aiCalculating: '계산 중...',
       calories: '칼로리 (kcal)',
       protein: '단백질 (g)',
       carb: '탄수화물 (g)',
@@ -111,10 +108,7 @@ const dictionary = {
       colProtein: '단백질',
       colCarb: '탄수화물',
       colFat: '지방',
-      errorFoodRequired: '음식 이름과 칼로리는 필수입니다.',
-      errorAiInput: '음식 이름과 그램(g) 수를 입력해주세요.',
-      errorAiFail: 'AI가 계산하지 못했습니다. 직접 입력해주세요.',
-      errorAiException: 'AI 계산 중 문제가 발생했습니다. 직접 입력해주세요.'
+      errorFoodRequired: '음식 이름과 칼로리는 필수입니다.'
     },
     workout: {
       title: '오늘의 운동 기록',
@@ -274,9 +268,6 @@ const dictionary = {
     diet: {
       title: "Today's diet log",
       mealName: 'Food name (e.g. Chicken salad)',
-      grams: 'Amount (g)',
-      aiCalc: 'Calculate with AI',
-      aiCalculating: 'Calculating...',
       calories: 'Calories (kcal)',
       protein: 'Protein (g)',
       carb: 'Carbs (g)',
@@ -288,10 +279,7 @@ const dictionary = {
       colProtein: 'Protein',
       colCarb: 'Carbs',
       colFat: 'Fat',
-      errorFoodRequired: 'Food name and calories are required.',
-      errorAiInput: 'Enter a food name and amount in grams.',
-      errorAiFail: "AI couldn't calculate this. Please enter it manually.",
-      errorAiException: 'Something went wrong calculating with AI. Please enter it manually.'
+      errorFoodRequired: 'Food name and calories are required.'
     },
     workout: {
       title: "Today's workout log",

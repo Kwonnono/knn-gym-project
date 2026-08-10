@@ -1,7 +1,10 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { DietLogForm } from '@/components/DietLogForm';
+import { addDietLogAction } from '@/app/actions';
 import { getLocale, getDictionary } from '@/lib/i18n';
+
+const inputClass =
+  'rounded-lg border border-neutral-300 bg-white px-3 py-2 transition-colors focus:border-neutral-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:focus:border-neutral-500';
 
 function startOfToday(): string {
   const d = new Date();
@@ -37,7 +40,22 @@ export default async function DietPage({
 
       {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
 
-      <DietLogForm t={t.diet} />
+      <form
+        action={addDietLogAction}
+        className="grid grid-cols-2 gap-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-950"
+      >
+        <input name="mealName" placeholder={t.diet.mealName} required className={`col-span-2 ${inputClass}`} />
+        <input name="calories" type="number" placeholder={t.diet.calories} required className={inputClass} />
+        <input name="proteinG" type="number" placeholder={t.diet.protein} className={inputClass} />
+        <input name="carbG" type="number" placeholder={t.diet.carb} className={inputClass} />
+        <input name="fatG" type="number" placeholder={t.diet.fat} className={inputClass} />
+        <button
+          type="submit"
+          className="col-span-2 rounded-lg bg-black px-3 py-2 font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+        >
+          {t.diet.submit}
+        </button>
+      </form>
 
       <div className="overflow-x-auto rounded-xl border border-neutral-200 shadow-sm dark:border-neutral-800">
         <table className="w-full text-sm">
