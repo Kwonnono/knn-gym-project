@@ -5,7 +5,6 @@ import { TargetIcon } from '@/components/icons';
 import { ProgressBar } from '@/components/ProgressBar';
 import { getLocale, getDictionary, type Dictionary } from '@/lib/i18n';
 import { getSetCount, getFirstSetDetail } from '@/lib/workoutVolume';
-import { calculateWeeklyCurriculum, type WeightChangeSpeed } from '@/lib/calc';
 import { WeightChart } from '@/components/WeightChart';
 import { groupDietLogsByMeal } from '@/lib/mealGroups';
 
@@ -90,33 +89,20 @@ export default async function DashboardPage() {
     withinTolerance(consumed.carbG, goal.target_carb_g) &&
     withinTolerance(consumed.fatG, goal.target_fat_g);
 
-  const weeklyTarget = (() => {
-    if (!goal.duration_weeks) return null;
-    const curriculum = calculateWeeklyCurriculum(
-      {
-        heightCm: goal.height_cm,
-        weightKg: goal.weight_kg,
-        age: goal.age,
-        sex: goal.sex,
-        activityLevel: goal.activity_level,
-        goalType: goal.goal_type,
-        weightChangeSpeed: (goal.weight_change_speed as WeightChangeSpeed) ?? 'normal',
-        targetSkeletalMuscleMassKg: goal.target_skeletal_muscle_mass_kg ?? undefined
-      },
-      goal.duration_weeks
-    );
-    const daysSinceStart = Math.floor((Date.now() - new Date(goal.updated_at).getTime()) / (1000 * 60 * 60 * 24));
-    const currentWeek = Math.min(goal.duration_weeks, Math.max(1, Math.floor(daysSinceStart / 7) + 1));
-    return curriculum.find((c) => c.week === currentWeek) ?? null;
-  })();
-
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <h1 className="font-display text-4xl tracking-wide">{t.dashboard.title}</h1>
           <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-            {t.dashboard.goalLine(goalLabel, goal.bmr, goal.target_calories)}
+            {t.dashboard.goalLine(
+              goalLabel,
+              goal.bmr,
+              goal.target_calories,
+              goal.target_protein_g,
+              goal.target_carb_g,
+              goal.target_fat_g
+            )}
           </p>
         </div>
         <a
@@ -214,23 +200,6 @@ export default async function DashboardPage() {
 
         {/* 우측 컬럼 (40%) */}
         <div className="flex flex-col gap-6 lg:col-span-2">
-          <div className="grid grid-cols-2 gap-3">
-            <a
-              href="/diet"
-              className="rounded-xl border border-neutral-200 bg-white p-4 text-center shadow-sm transition-colors hover:border-neutral-300 hover:shadow dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700"
-            >
-              <p className="font-display text-2xl tracking-wide">+</p>
-              <p className="mt-1 text-sm font-medium">{t.dashboard.navDietTitle}</p>
-            </a>
-            <a
-              href="/workout"
-              className="rounded-xl border border-neutral-200 bg-white p-4 text-center shadow-sm transition-colors hover:border-neutral-300 hover:shadow dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700"
-            >
-              <p className="font-display text-2xl tracking-wide">+</p>
-              <p className="mt-1 text-sm font-medium">{t.dashboard.navWorkoutTitle}</p>
-            </a>
-          </div>
-
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-xl tracking-wide">{t.dashboard.todayWorkoutLog}</h2>
@@ -271,16 +240,6 @@ export default async function DashboardPage() {
               </table>
             </div>
           </div>
-
-          {weeklyTarget && (
-            <div className="space-y-2 rounded-xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
-              <h2 className="font-display text-lg tracking-wide">{t.dashboard.weeklyCurriculumTitle(weeklyTarget.week)}</h2>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                {t.dashboard.calories} {weeklyTarget.targetCalories}kcal · {t.dashboard.protein} {weeklyTarget.targetProteinG}g ·{' '}
-                {t.dashboard.carb} {weeklyTarget.targetCarbG}g · {t.dashboard.fat} {weeklyTarget.targetFatG}g
-              </p>
-            </div>
-          )}
 
           <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
             <div className="flex items-center justify-between px-0.5">
