@@ -34,7 +34,12 @@ export default async function DietPage({
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <h1 className="font-display text-3xl tracking-wide">{t.diet.title}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="font-display text-3xl tracking-wide">{t.diet.title}</h1>
+        <a href="/diet/history" className="text-sm underline">
+          {t.diet.viewCalendar}
+        </a>
+      </div>
 
       {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
 

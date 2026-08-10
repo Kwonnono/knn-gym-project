@@ -117,7 +117,9 @@ const dictionary = {
       delete: '삭제',
       save: '저장',
       cancel: '취소',
-      confirmDelete: '이 식단 기록을 삭제하시겠습니까?'
+      confirmDelete: '이 식단 기록을 삭제하시겠습니까?',
+      viewCalendar: '캘린더 보기',
+      calendarWeekdays: ['일', '월', '화', '수', '목', '금', '토']
     },
     workout: {
       title: '오늘의 운동 기록',
@@ -307,7 +309,9 @@ const dictionary = {
       delete: 'Delete',
       save: 'Save',
       cancel: 'Cancel',
-      confirmDelete: 'Delete this meal log?'
+      confirmDelete: 'Delete this meal log?',
+      viewCalendar: 'View calendar',
+      calendarWeekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
     },
     workout: {
       title: "Today's workout log",
