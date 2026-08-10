@@ -5,7 +5,7 @@ import { logoutAction } from '@/app/actions';
 import { getLocale, getDictionary } from '@/lib/i18n';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { LanguageToggle } from '@/components/LanguageToggle';
-import { HomeIcon, TargetIcon, UtensilsIcon, DumbbellIcon, UserIcon, SettingsIcon } from '@/components/icons';
+import { NavMenu } from '@/components/NavMenu';
 import './globals.css';
 
 // Bebas Neue/Inter는 라틴 문자만 지원하므로, 같은 톤의 한글 전용 폰트를 폴백으로 묶어 씁니다.
@@ -29,14 +29,10 @@ const THEME_INIT_SCRIPT = `
 })();
 `;
 
-const iconLinkClass =
-  'rounded-lg p-1.5 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-900 dark:hover:text-white';
-
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
   const locale = await getLocale();
   const t = getDictionary(locale);
-  const displayName = (user?.user_metadata?.name as string | undefined) ?? user?.email;
 
   return (
     <html lang={locale} className={`${displayFont.variable} ${displayFontKr.variable} ${bodyFont.variable} ${bodyFontKr.variable}`}>
@@ -58,30 +54,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </a>
           <nav className="flex items-center justify-self-end gap-4 text-sm">
             {user ? (
-              <>
-                <a href="/dashboard" title={t.nav.home} aria-label={t.nav.home} className={iconLinkClass}>
-                  <HomeIcon />
-                </a>
-                <a href="/profile" title={t.nav.goal} aria-label={t.nav.goal} className={iconLinkClass}>
-                  <TargetIcon />
-                </a>
-                <a href="/diet" title={t.nav.diet} aria-label={t.nav.diet} className={iconLinkClass}>
-                  <UtensilsIcon />
-                </a>
-                <a href="/workout" title={t.nav.workout} aria-label={t.nav.workout} className={iconLinkClass}>
-                  <DumbbellIcon />
-                </a>
-                <span className="h-5 w-px bg-neutral-200 dark:bg-neutral-800" />
-                <a href="/mypage" title={`${t.nav.mypage} (${displayName})`} aria-label={t.nav.mypage} className={iconLinkClass}>
-                  <UserIcon />
-                </a>
-                <a href="/settings" title={t.nav.settings} aria-label={t.nav.settings} className={iconLinkClass}>
-                  <SettingsIcon />
-                </a>
-                <form action={logoutAction}>
-                  <button type="submit" className="text-neutral-500 hover:underline dark:text-neutral-400">{t.nav.logout}</button>
-                </form>
-              </>
+              <NavMenu
+                items={[
+                  { href: '/dashboard', label: t.nav.home },
+                  { href: '/profile', label: t.nav.goal },
+                  { href: '/diet', label: t.nav.diet },
+                  { href: '/workout', label: t.nav.workout },
+                  { href: '/weight', label: t.nav.weight },
+                  { href: '/mypage', label: t.nav.mypage },
+                  { href: '/settings', label: t.nav.settings }
+                ]}
+                logoutLabel={t.nav.logout}
+                logoutAction={logoutAction}
+              />
             ) : (
               <>
                 <a href="/login" className="hover:underline">{t.nav.login}</a>
