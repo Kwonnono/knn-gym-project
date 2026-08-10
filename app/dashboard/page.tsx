@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { TargetIcon } from '@/components/icons';
 import { ProgressBar } from '@/components/ProgressBar';
 import { getLocale, getDictionary, type Dictionary } from '@/lib/i18n';
-import { getSetCount, getTotalVolume, getFirstSetDetail } from '@/lib/workoutVolume';
+import { getSetCount, getFirstSetDetail } from '@/lib/workoutVolume';
 import { calculateWeeklyCurriculum, type WeightChangeSpeed } from '@/lib/calc';
 import { WeightChart } from '@/components/WeightChart';
 import { groupDietLogsByMeal } from '@/lib/mealGroups';
@@ -260,18 +260,9 @@ export default async function DashboardPage() {
                         <td className="px-4 py-2">{categoryLabel(t, log.category)}</td>
                         <td className="px-4 py-2 font-medium">{log.exercise}</td>
                         <td className="px-4 py-2">
-                          {log.category === 'cardio' ? (
-                            t.dashboard.cardioContent(log.duration_min, log.distance_km)
-                          ) : (
-                            <>
-                              <div>{t.dashboard.strengthContent(getSetCount(log), getTotalVolume(log))}</div>
-                              {setDetail && (
-                                <div className="text-xs text-neutral-400 dark:text-neutral-500">
-                                  {t.dashboard.strengthSetDetail(setDetail.weightKg, setDetail.reps, setDetail.remaining)}
-                                </div>
-                              )}
-                            </>
-                          )}
+                          {log.category === 'cardio'
+                            ? t.dashboard.cardioContent(log.duration_min, log.distance_km)
+                            : setDetail && t.dashboard.strengthContent(getSetCount(log), setDetail.weightKg, setDetail.reps)}
                         </td>
                       </tr>
                     );
