@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getLocale, getDictionary } from '@/lib/i18n';
 import { DietForm } from '@/components/DietForm';
 import { DietLogTable } from '@/components/DietLogTable';
+import { QuickAddFoods } from '@/components/QuickAddFoods';
 
 function pad(n: number): string {
   return String(n).padStart(2, '0');
@@ -39,6 +40,29 @@ export default async function DietPage({
     .lt('date', dayEnd.toISOString())
     .order('created_at', { ascending: false });
 
+  const { data: recentLogs } = await supabase
+    .from('diet_logs')
+    .select('meal_name, calories, protein_g, carb_g, fat_g')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+    .limit(60);
+
+  const seen = new Set<string>();
+  const quickAddFoods = (recentLogs ?? [])
+    .filter((log) => {
+      if (seen.has(log.meal_name)) return false;
+      seen.add(log.meal_name);
+      return true;
+    })
+    .slice(0, 6)
+    .map((log) => ({
+      mealName: log.meal_name,
+      calories: log.calories,
+      proteinG: log.protein_g,
+      carbG: log.carb_g,
+      fatG: log.fat_g
+    }));
+
   const locale = await getLocale();
   const t = getDictionary(locale);
   const redirectTo = `/diet?date=${selectedDateKey}`;
@@ -56,6 +80,8 @@ export default async function DietPage({
       </div>
 
       {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
+
+      <QuickAddFoods foods={quickAddFoods} date={selectedDateKey} redirectTo={redirectTo} title={t.diet.quickAddTitle} />
 
       <DietForm
         date={selectedDateKey}
