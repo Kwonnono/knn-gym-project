@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { calculateTargets } from '@/lib/calc';
 import { TargetIcon } from '@/components/icons';
 import { ProgressBar } from '@/components/ProgressBar';
 import { getLocale, getDictionary, type Dictionary } from '@/lib/i18n';
@@ -48,6 +49,20 @@ export default async function DashboardPage({
   const { data: goal } = await supabase.from('goals').select('*').eq('user_id', user.id).maybeSingle();
   if (!goal) redirect('/profile');
 
+  // 저장된 목표치가 아니라 매번 새로 계산합니다 — lib/calc.ts 공식이 바뀌어도
+  // 사용자가 /profile에서 재저장하지 않아도 대시보드에 즉시 반영되도록 하기 위함.
+  const targets = calculateTargets({
+    heightCm: goal.height_cm,
+    weightKg: goal.weight_kg,
+    age: goal.age,
+    sex: goal.sex,
+    activityLevel: goal.activity_level,
+    goalType: goal.goal_type,
+    weightChangeSpeed: goal.weight_change_speed ?? undefined,
+    targetSkeletalMuscleMassKg: goal.target_skeletal_muscle_mass_kg ?? undefined,
+    bodyFatPercent: goal.body_fat_percent ?? undefined
+  });
+
   const locale = await getLocale();
   const t = getDictionary(locale);
 
@@ -94,24 +109,24 @@ export default async function DashboardPage({
     { calories: 0, proteinG: 0, carbG: 0, fatG: 0 }
   );
 
-  const remainingCalories = goal.target_calories - consumed.calories;
+  const remainingCalories = targets.targetCalories - consumed.calories;
   const goalLabel = t.goalLabels[goal.goal_type as keyof typeof t.goalLabels] ?? goal.goal_type;
   const dietMealGroups = groupDietLogsByMeal(dietLogs ?? []);
   const recentWorkoutLogs = (workoutLogs ?? []).slice(0, 5);
 
   // 단백질 팁 기준 식품: 닭가슴살(100g당 31g 단백질, 1팩=100g 가정)
   const PROTEIN_TIP_G_PER_100 = 31;
-  const remainingProteinG = goal.target_protein_g - consumed.proteinG;
+  const remainingProteinG = targets.targetProteinG - consumed.proteinG;
   const proteinTipPacks =
     remainingProteinG > 5 ? Math.round((remainingProteinG / PROTEIN_TIP_G_PER_100) * 10) / 10 : null;
 
   const withinTolerance = (value: number, target: number) => target > 0 && value / target >= 0.95 && value / target <= 1.1;
   const goalAchieved =
     (dietLogs ?? []).length > 0 &&
-    withinTolerance(consumed.calories, goal.target_calories) &&
-    withinTolerance(consumed.proteinG, goal.target_protein_g) &&
-    withinTolerance(consumed.carbG, goal.target_carb_g) &&
-    withinTolerance(consumed.fatG, goal.target_fat_g);
+    withinTolerance(consumed.calories, targets.targetCalories) &&
+    withinTolerance(consumed.proteinG, targets.targetProteinG) &&
+    withinTolerance(consumed.carbG, targets.targetCarbG) &&
+    withinTolerance(consumed.fatG, targets.targetFatG);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -123,7 +138,7 @@ export default async function DashboardPage({
             <DateNav date={selectedDateKey} todayLabel={t.dashboard.todayLabel} />
           </div>
           <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-            {t.dashboard.goalLine(goalLabel, goal.bmr)}
+            {t.dashboard.goalLine(goalLabel, targets.bmr)}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -173,14 +188,14 @@ export default async function DashboardPage({
                 <span className="ml-1 text-xl">kcal</span>
               </p>
               <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-                {consumed.calories}kcal / {goal.target_calories}kcal
+                {consumed.calories}kcal / {targets.targetCalories}kcal
               </p>
             </div>
 
             <div className="space-y-3">
-              <ProgressBar label={t.dashboard.protein} value={consumed.proteinG} target={goal.target_protein_g} unit="g" color="rose" />
-              <ProgressBar label={t.dashboard.carb} value={consumed.carbG} target={goal.target_carb_g} unit="g" color="emerald" />
-              <ProgressBar label={t.dashboard.fat} value={consumed.fatG} target={goal.target_fat_g} unit="g" color="amber" />
+              <ProgressBar label={t.dashboard.protein} value={consumed.proteinG} target={targets.targetProteinG} unit="g" color="rose" />
+              <ProgressBar label={t.dashboard.carb} value={consumed.carbG} target={targets.targetCarbG} unit="g" color="emerald" />
+              <ProgressBar label={t.dashboard.fat} value={consumed.fatG} target={targets.targetFatG} unit="g" color="amber" />
             </div>
 
             {proteinTipPacks !== null && (

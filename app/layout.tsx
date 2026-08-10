@@ -37,7 +37,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const displayName = (user?.user_metadata?.name as string | undefined) ?? user?.email ?? '';
 
   return (
-    <html lang={locale} className={`${displayFont.variable} ${displayFontKr.variable} ${bodyFont.variable} ${bodyFontKr.variable}`}>
+    <html
+      lang={locale}
+      className={`${displayFont.variable} ${displayFontKr.variable} ${bodyFont.variable} ${bodyFontKr.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
@@ -57,7 +61,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <nav className="flex items-center justify-self-end gap-4 text-sm">
             {user ? (
               <a
-                href="/mypage"
+                href="/profile"
                 className="flex items-center gap-2 rounded-lg px-1.5 py-1 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-900"
               >
                 <Avatar name={displayName} />

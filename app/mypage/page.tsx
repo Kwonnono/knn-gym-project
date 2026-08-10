@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { calculateTargets } from '@/lib/calc';
 import { getLocale, getDictionary } from '@/lib/i18n';
 
 function toDateKey(iso: string): string {
@@ -33,6 +34,19 @@ export default async function MyPage() {
   const { data: workoutDates } = await supabase.from('workout_logs').select('date').eq('user_id', user.id);
   const streakDays = computeStreakDays(dietDates ?? [], workoutDates ?? []);
   const displayName = (user.user_metadata?.name as string | undefined) ?? user.email;
+  const targets = goal
+    ? calculateTargets({
+        heightCm: goal.height_cm,
+        weightKg: goal.weight_kg,
+        age: goal.age,
+        sex: goal.sex,
+        activityLevel: goal.activity_level,
+        goalType: goal.goal_type,
+        weightChangeSpeed: goal.weight_change_speed ?? undefined,
+        targetSkeletalMuscleMassKg: goal.target_skeletal_muscle_mass_kg ?? undefined,
+        bodyFatPercent: goal.body_fat_percent ?? undefined
+      })
+    : null;
   const locale = await getLocale();
   const t = getDictionary(locale);
 
@@ -81,14 +95,14 @@ export default async function MyPage() {
 
       <section className="rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
         <h2 className="font-display text-lg tracking-wide">{t.mypage.currentGoal}</h2>
-        {goal ? (
+        {goal && targets ? (
           <>
             <p className="mt-2 text-sm">
               <span className="font-medium">{t.goalLabels[goal.goal_type as keyof typeof t.goalLabels] ?? goal.goal_type}</span>
-              {' · '}{t.mypage.targetCalories} {goal.target_calories}kcal
+              {' · '}{t.mypage.targetCalories} {targets.targetCalories}kcal
             </p>
             <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-              BMR {goal.bmr}kcal · TDEE {goal.tdee}kcal
+              BMR {targets.bmr}kcal · TDEE {targets.tdee}kcal
             </p>
           </>
         ) : (
