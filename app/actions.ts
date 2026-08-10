@@ -226,6 +226,24 @@ export async function deleteDietLogAction(formData: FormData): Promise<void> {
 const WORKOUT_CATEGORIES = ['chest', 'back', 'shoulders', 'arms', 'legs', 'core', 'cardio'] as const;
 export type WorkoutCategory = (typeof WORKOUT_CATEGORIES)[number];
 
+interface ParsedWorkoutSet {
+  reps: number;
+  weightKg: number;
+}
+
+function parseSetsData(formData: FormData): ParsedWorkoutSet[] {
+  let raw: unknown;
+  try {
+    raw = JSON.parse(String(formData.get('setsData') ?? '[]'));
+  } catch {
+    return [];
+  }
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((s) => ({ reps: Number((s as ParsedWorkoutSet).reps), weightKg: Number((s as ParsedWorkoutSet).weightKg) }))
+    .filter((s) => Number.isFinite(s.reps) && s.reps > 0 && Number.isFinite(s.weightKg) && s.weightKg >= 0);
+}
+
 export async function addWorkoutLogAction(formData: FormData): Promise<void> {
   const t = getDictionary(await getLocale());
   const supabase = await createClient();
@@ -264,11 +282,9 @@ export async function addWorkoutLogAction(formData: FormData): Promise<void> {
       redirect(`/workout?category=cardio&error=` + encodeURIComponent(error.message));
     }
   } else {
-    const sets = Number(formData.get('sets'));
-    const reps = Number(formData.get('reps'));
-    const weightKg = formData.get('weightKg') ? Number(formData.get('weightKg')) : 0;
+    const setsData = parseSetsData(formData);
 
-    if (!sets || !reps) {
+    if (setsData.length === 0) {
       redirect(`/workout?category=${category}&error=` + encodeURIComponent(t.workout.errorSetsReps));
     }
 
@@ -276,9 +292,10 @@ export async function addWorkoutLogAction(formData: FormData): Promise<void> {
       user_id: user!.id,
       category,
       exercise,
-      sets,
-      reps,
-      weight_kg: weightKg
+      sets: setsData.length,
+      reps: setsData[0].reps,
+      weight_kg: setsData[0].weightKg,
+      sets_data: setsData
     });
 
     if (error) {
@@ -329,17 +346,21 @@ export async function updateWorkoutLogAction(formData: FormData): Promise<void> 
       redirect(`${redirectTo}&error=` + encodeURIComponent(error.message));
     }
   } else {
-    const sets = Number(formData.get('sets'));
-    const reps = Number(formData.get('reps'));
-    const weightKg = formData.get('weightKg') ? Number(formData.get('weightKg')) : 0;
+    const setsData = parseSetsData(formData);
 
-    if (!sets || !reps) {
+    if (setsData.length === 0) {
       redirect(`${redirectTo}&error=` + encodeURIComponent(t.workout.errorSetsReps));
     }
 
     const { error } = await supabase
       .from('workout_logs')
-      .update({ exercise, sets, reps, weight_kg: weightKg })
+      .update({
+        exercise,
+        sets: setsData.length,
+        reps: setsData[0].reps,
+        weight_kg: setsData[0].weightKg,
+        sets_data: setsData
+      })
       .eq('id', id)
       .eq('user_id', user!.id);
 

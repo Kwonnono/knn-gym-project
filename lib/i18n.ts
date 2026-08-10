@@ -95,7 +95,7 @@ const dictionary = {
       exercise: '운동',
       content: '내용',
       cardioContent: (duration: number, distance: number | null) => `${duration}분${distance ? ` · ${distance}km` : ''}`,
-      strengthContent: (sets: number, reps: number, weight: number) => `${sets}세트 × ${reps}회 × ${weight}kg`
+      strengthContent: (setsCount: number, totalVolume: number) => `${setsCount}세트 · 총 ${totalVolume}kg`
     },
     diet: {
       title: '오늘의 식단 기록',
@@ -146,6 +146,9 @@ const dictionary = {
       colSets: '세트',
       colReps: '횟수',
       colWeight: '무게',
+      colTotalSets: '총 세트',
+      colTotalVolume: '총 볼륨',
+      addSet: '+ 세트 추가',
       errorCategory: '잘못된 운동 부위입니다.',
       errorExercise: '운동 이름을 입력해주세요.',
       errorDuration: '운동 시간(분)을 입력해주세요.',
@@ -287,7 +290,7 @@ const dictionary = {
       exercise: 'Exercise',
       content: 'Details',
       cardioContent: (duration: number, distance: number | null) => `${duration}min${distance ? ` · ${distance}km` : ''}`,
-      strengthContent: (sets: number, reps: number, weight: number) => `${sets} sets × ${reps} reps × ${weight}kg`
+      strengthContent: (setsCount: number, totalVolume: number) => `${setsCount} sets · ${totalVolume}kg total`
     },
     diet: {
       title: "Today's diet log",
@@ -338,6 +341,9 @@ const dictionary = {
       colSets: 'Sets',
       colReps: 'Reps',
       colWeight: 'Weight',
+      colTotalSets: 'Total sets',
+      colTotalVolume: 'Total volume',
+      addSet: '+ Add set',
       errorCategory: 'Invalid body part.',
       errorExercise: 'Please enter an exercise name.',
       errorDuration: 'Please enter the duration in minutes.',

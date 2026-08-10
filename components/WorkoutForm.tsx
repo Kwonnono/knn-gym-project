@@ -8,6 +8,11 @@ const inputClass =
 
 const CUSTOM_VALUE = '__custom__';
 
+interface SetRow {
+  reps: string;
+  weightKg: string;
+}
+
 export function WorkoutForm({
   category,
   isCardio,
@@ -23,14 +28,31 @@ export function WorkoutForm({
     customExercise: string;
     durationMin: string;
     distanceKm: string;
-    sets: string;
     reps: string;
     weightKg: string;
+    addSet: string;
     submit: string;
   };
 }) {
   const [selected, setSelected] = useState('');
+  const [sets, setSets] = useState<SetRow[]>([{ reps: '', weightKg: '' }]);
   const isCustom = selected === CUSTOM_VALUE;
+
+  function updateSet(index: number, field: keyof SetRow, value: string) {
+    setSets((prev) => prev.map((s, i) => (i === index ? { ...s, [field]: value } : s)));
+  }
+
+  function addSetRow() {
+    setSets((prev) => [...prev, { reps: '', weightKg: '' }]);
+  }
+
+  function removeSetRow(index: number) {
+    setSets((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : prev));
+  }
+
+  const setsDataJson = JSON.stringify(
+    sets.filter((s) => s.reps !== '' && s.weightKg !== '').map((s) => ({ reps: Number(s.reps), weightKg: Number(s.weightKg) }))
+  );
 
   return (
     <form
@@ -60,11 +82,41 @@ export function WorkoutForm({
           <input name="distanceKm" type="number" step="0.1" placeholder={labels.distanceKm} className={`col-span-2 ${inputClass}`} />
         </>
       ) : (
-        <>
-          <input name="sets" type="number" placeholder={labels.sets} required className={inputClass} />
-          <input name="reps" type="number" placeholder={labels.reps} required className={inputClass} />
-          <input name="weightKg" type="number" step="0.5" placeholder={labels.weightKg} className={inputClass} />
-        </>
+        <div className="col-span-3 space-y-2">
+          {sets.map((s, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <span className="w-6 text-xs text-neutral-500 dark:text-neutral-400">{i + 1}</span>
+              <input
+                type="number"
+                placeholder={labels.reps}
+                value={s.reps}
+                onChange={(e) => updateSet(i, 'reps', e.target.value)}
+                className={`flex-1 ${inputClass}`}
+              />
+              <input
+                type="number"
+                step="0.5"
+                placeholder={labels.weightKg}
+                value={s.weightKg}
+                onChange={(e) => updateSet(i, 'weightKg', e.target.value)}
+                className={`flex-1 ${inputClass}`}
+              />
+              {sets.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeSetRow(i)}
+                  className="rounded-lg px-2 py-1 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          ))}
+          <button type="button" onClick={addSetRow} className="text-sm underline">
+            {labels.addSet}
+          </button>
+          <input type="hidden" name="setsData" value={setsDataJson} />
+        </div>
       )}
       <button
         type="submit"

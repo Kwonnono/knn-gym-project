@@ -82,9 +82,9 @@ export default async function WorkoutPage({
           customExercise: t.workout.customExercise,
           durationMin: t.workout.durationMin,
           distanceKm: t.workout.distanceKm,
-          sets: t.workout.sets,
           reps: t.workout.reps,
           weightKg: t.workout.weightKg,
+          addSet: t.workout.addSet,
           submit: t.workout.submit
         }}
       />
@@ -98,15 +98,19 @@ export default async function WorkoutPage({
           colExercise: t.workout.colExercise,
           colDuration: t.workout.colDuration,
           colDistance: t.workout.colDistance,
-          colSets: t.workout.colSets,
-          colReps: t.workout.colReps,
-          colWeight: t.workout.colWeight,
+          colTotalSets: t.workout.colTotalSets,
+          colTotalVolume: t.workout.colTotalVolume,
           noLogs: t.workout.noLogs,
           edit: t.workout.edit,
           delete: t.workout.delete,
           save: t.workout.save,
           cancel: t.workout.cancel,
-          confirmDelete: t.workout.confirmDelete
+          confirmDelete: t.workout.confirmDelete,
+          reps: t.workout.reps,
+          weightKg: t.workout.weightKg,
+          addSet: t.workout.addSet,
+          durationMin: t.workout.durationMin,
+          distanceKm: t.workout.distanceKm
         }}
       />
     </div>

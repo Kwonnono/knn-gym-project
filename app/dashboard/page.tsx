@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { TargetIcon } from '@/components/icons';
 import { ProgressBar } from '@/components/ProgressBar';
 import { getLocale, getDictionary, type Dictionary } from '@/lib/i18n';
+import { getSetCount, getTotalVolume } from '@/lib/workoutVolume';
 
 function startOfToday(): string {
   const d = new Date();
@@ -211,7 +212,7 @@ export default async function DashboardPage() {
                       <td className="px-4 py-2">
                         {log.category === 'cardio'
                           ? t.dashboard.cardioContent(log.duration_min, log.distance_km)
-                          : t.dashboard.strengthContent(log.sets, log.reps, log.weight_kg)}
+                          : t.dashboard.strengthContent(getSetCount(log), getTotalVolume(log))}
                       </td>
                     </tr>
                   ))}
