@@ -5,6 +5,7 @@ import { ProgressBar } from '@/components/ProgressBar';
 import { getLocale, getDictionary, type Dictionary } from '@/lib/i18n';
 import { getSetCount, getTotalVolume } from '@/lib/workoutVolume';
 import { calculateWeeklyCurriculum, type WeightChangeSpeed } from '@/lib/calc';
+import { WeightChart } from '@/components/WeightChart';
 
 function startOfToday(): string {
   const d = new Date();
@@ -53,6 +54,16 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
     .gte('date', todayStart)
     .order('created_at', { ascending: false });
+
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const { data: weightLogs } = await supabase
+    .from('weight_logs')
+    .select('*')
+    .eq('user_id', user.id)
+    .gte('date', thirtyDaysAgo.toISOString())
+    .order('date', { ascending: true });
+  const weightPoints = (weightLogs ?? []).map((log) => ({ date: log.date, weightKg: log.weight_kg }));
 
   const consumed = (dietLogs ?? []).reduce(
     (acc, log) => ({
@@ -185,7 +196,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* 우측 컬럼 (40%) */}
-        <div className="space-y-6 lg:col-span-2">
+        <div className="flex flex-col gap-6 lg:col-span-2">
           <div className="grid grid-cols-2 gap-3">
             <a
               href="/diet"
@@ -251,8 +262,20 @@ export default async function DashboardPage() {
             </div>
           )}
 
-          <div className="rounded-xl border border-dashed border-neutral-300 p-5 text-center text-sm text-neutral-500 dark:border-neutral-700 dark:text-neutral-400">
-            {t.dashboard.weightGraphComingSoon}
+          <div className="flex flex-1 flex-col rounded-xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-950">
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-lg tracking-wide">{t.dashboard.weightChartTitle}</h2>
+              <a href="/weight" className="text-sm underline">{t.dashboard.viewAll}</a>
+            </div>
+            <div className="mt-2 flex-1">
+              {weightPoints.length > 0 ? (
+                <WeightChart points={weightPoints} />
+              ) : (
+                <p className="flex h-full min-h-[100px] items-center justify-center text-sm text-neutral-500 dark:text-neutral-400">
+                  {t.dashboard.noWeightLogs}
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -89,7 +89,8 @@ const dictionary = {
       navWorkoutDesc: '부위별 운동 기록하기',
       todayIntake: '오늘 섭취',
       remainingCalories: '남은 칼로리',
-      weightGraphComingSoon: '체중 변화 그래프 (준비 중)',
+      weightChartTitle: '체중 변화',
+      noWeightLogs: '체중 기록이 없습니다.',
       goalAchieved: '오늘의 목표 달성!',
       weeklyCurriculumTitle: (week: number) => `이번 주 커리큘럼 (${week}주차)`,
       calories: '칼로리',
@@ -168,6 +169,20 @@ const dictionary = {
       save: '저장',
       cancel: '취소',
       confirmDelete: '이 운동 기록을 삭제하시겠습니까?'
+    },
+    weight: {
+      title: '체중 기록',
+      weightLabel: '체중 (kg)',
+      submit: '기록하기',
+      noLogs: '기록된 체중이 없습니다.',
+      colDate: '날짜',
+      colWeight: '체중',
+      edit: '수정',
+      delete: '삭제',
+      save: '저장',
+      cancel: '취소',
+      confirmDelete: '이 체중 기록을 삭제하시겠습니까?',
+      errorWeightRequired: '체중을 입력해주세요.'
     },
     mypage: {
       title: '마이페이지',
@@ -294,7 +309,8 @@ const dictionary = {
       navWorkoutDesc: 'Log your workout by body part',
       todayIntake: "Today's intake",
       remainingCalories: 'Calories remaining',
-      weightGraphComingSoon: 'Weight trend graph (coming soon)',
+      weightChartTitle: 'Weight trend',
+      noWeightLogs: 'No weight logs yet.',
       goalAchieved: "Today's goal achieved!",
       weeklyCurriculumTitle: (week: number) => `This week's plan (week ${week})`,
       calories: 'Calories',
@@ -373,6 +389,20 @@ const dictionary = {
       save: 'Save',
       cancel: 'Cancel',
       confirmDelete: 'Delete this workout log?'
+    },
+    weight: {
+      title: 'Weight log',
+      weightLabel: 'Weight (kg)',
+      submit: 'Log weight',
+      noLogs: 'No weight logs yet.',
+      colDate: 'Date',
+      colWeight: 'Weight',
+      edit: 'Edit',
+      delete: 'Delete',
+      save: 'Save',
+      cancel: 'Cancel',
+      confirmDelete: 'Delete this weight log?',
+      errorWeightRequired: 'Please enter a weight.'
     },
     mypage: {
       title: 'My Page',

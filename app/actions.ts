@@ -233,6 +233,80 @@ export async function deleteDietLogAction(formData: FormData): Promise<void> {
   redirect(redirectTo);
 }
 
+export async function addWeightLogAction(formData: FormData): Promise<void> {
+  const t = getDictionary(await getLocale());
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
+
+  const weightKg = Number(formData.get('weightKg'));
+  if (!weightKg) {
+    redirect('/weight?error=' + encodeURIComponent(t.weight.errorWeightRequired));
+  }
+
+  const { error } = await supabase.from('weight_logs').insert({
+    user_id: user!.id,
+    weight_kg: weightKg
+  });
+
+  if (error) {
+    redirect('/weight?error=' + encodeURIComponent(error.message));
+  }
+
+  revalidatePath('/weight');
+  revalidatePath('/dashboard');
+  redirect('/weight');
+}
+
+export async function updateWeightLogAction(formData: FormData): Promise<void> {
+  const t = getDictionary(await getLocale());
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
+
+  const id = String(formData.get('id') ?? '');
+  const weightKg = Number(formData.get('weightKg'));
+
+  if (!id || !weightKg) {
+    redirect('/weight?error=' + encodeURIComponent(t.weight.errorWeightRequired));
+  }
+
+  const { error } = await supabase
+    .from('weight_logs')
+    .update({ weight_kg: weightKg })
+    .eq('id', id)
+    .eq('user_id', user!.id);
+
+  if (error) {
+    redirect('/weight?error=' + encodeURIComponent(error.message));
+  }
+
+  revalidatePath('/weight');
+  revalidatePath('/dashboard');
+  redirect('/weight');
+}
+
+export async function deleteWeightLogAction(formData: FormData): Promise<void> {
+  const supabase = await createClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
+
+  const id = String(formData.get('id') ?? '');
+  if (id) {
+    await supabase.from('weight_logs').delete().eq('id', id).eq('user_id', user.id);
+  }
+
+  revalidatePath('/weight');
+  revalidatePath('/dashboard');
+  redirect('/weight');
+}
+
 const WORKOUT_CATEGORIES = ['chest', 'back', 'shoulders', 'arms', 'legs', 'core', 'cardio'] as const;
 export type WorkoutCategory = (typeof WORKOUT_CATEGORIES)[number];
 
