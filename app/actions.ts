@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
-import { calculateTargets, type ActivityLevel, type GoalType, type Sex } from '@/lib/calc';
+import { calculateTargets, type ActivityLevel, type GoalType, type Sex, type WeightChangeSpeed } from '@/lib/calc';
 import { validatePassword } from '@/lib/passwordPolicy';
 import { getLocale, getDictionary } from '@/lib/i18n';
 
@@ -97,12 +97,17 @@ export async function saveGoalAction(formData: FormData): Promise<void> {
   const sex = String(formData.get('sex')) as Sex;
   const activityLevel = String(formData.get('activityLevel')) as ActivityLevel;
   const goalType = String(formData.get('goalType')) as GoalType;
+  const weightChangeSpeed = (String(formData.get('weightChangeSpeed') ?? 'normal') || 'normal') as WeightChangeSpeed;
+  const durationWeeks = formData.get('durationWeeks') ? Number(formData.get('durationWeeks')) : null;
+  const targetBodyFatPercent = formData.get('targetBodyFatPercent') ? Number(formData.get('targetBodyFatPercent')) : null;
+  const skeletalMuscleMassKg = formData.get('skeletalMuscleMassKg') ? Number(formData.get('skeletalMuscleMassKg')) : null;
+  const bodyFatPercent = formData.get('bodyFatPercent') ? Number(formData.get('bodyFatPercent')) : null;
 
   if (!heightCm || !weightKg || !age || !sex || !activityLevel || !goalType) {
     redirect('/profile?error=' + encodeURIComponent(t.profile.errorRequired));
   }
 
-  const targets = calculateTargets({ heightCm, weightKg, age, sex, activityLevel, goalType });
+  const targets = calculateTargets({ heightCm, weightKg, age, sex, activityLevel, goalType, weightChangeSpeed });
 
   const { error } = await supabase.from('goals').upsert(
     {
@@ -113,6 +118,11 @@ export async function saveGoalAction(formData: FormData): Promise<void> {
       sex,
       activity_level: activityLevel,
       goal_type: goalType,
+      weight_change_speed: weightChangeSpeed,
+      duration_weeks: durationWeeks,
+      target_body_fat_percent: targetBodyFatPercent,
+      skeletal_muscle_mass_kg: skeletalMuscleMassKg,
+      body_fat_percent: bodyFatPercent,
       bmr: targets.bmr,
       tdee: targets.tdee,
       target_calories: targets.targetCalories,

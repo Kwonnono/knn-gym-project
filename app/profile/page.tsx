@@ -72,6 +72,44 @@ export default async function ProfilePage({
             <option value="mini_bulk">{t.profile.goalMiniBulk}</option>
           </select>
         </label>
+        <label className="block text-sm">
+          {t.profile.weightChangeSpeed}
+          <select name="weightChangeSpeed" defaultValue={goal?.weight_change_speed ?? 'normal'} className={inputClass}>
+            <option value="slow">{t.profile.speedSlow}</option>
+            <option value="normal">{t.profile.speedNormal}</option>
+            <option value="fast">{t.profile.speedFast}</option>
+          </select>
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="text-sm">
+            {t.profile.durationWeeks}
+            <input name="durationWeeks" type="number" min="1" defaultValue={goal?.duration_weeks ?? ''} className={inputClass} />
+          </label>
+          <label className="text-sm">
+            {t.profile.targetBodyFatPercent}
+            <input
+              name="targetBodyFatPercent"
+              type="number"
+              step="0.1"
+              defaultValue={goal?.target_body_fat_percent ?? ''}
+              className={inputClass}
+            />
+          </label>
+          <label className="text-sm">
+            {t.profile.skeletalMuscleMassKg}
+            <input
+              name="skeletalMuscleMassKg"
+              type="number"
+              step="0.1"
+              defaultValue={goal?.skeletal_muscle_mass_kg ?? ''}
+              className={inputClass}
+            />
+          </label>
+          <label className="text-sm">
+            {t.profile.bodyFatPercent}
+            <input name="bodyFatPercent" type="number" step="0.1" defaultValue={goal?.body_fat_percent ?? ''} className={inputClass} />
+          </label>
+        </div>
         <button
           type="submit"
           className="w-full rounded-lg bg-black px-3 py-2 font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
