@@ -27,8 +27,16 @@ const WEIGHT_CHANGE_SPEED_MULTIPLIER: Record<WeightChangeSpeed, number> = {
   fast: 1.4
 };
 
-const PROTEIN_G_PER_KG = 2.0;
-const FAT_CALORIE_RATIO = 0.25;
+// 보디빌딩 기준 고단백 목표: 커팅류는 근손실 방지를 위해 더 높게, 그 외는 표준 상한값.
+const PROTEIN_G_PER_KG: Record<GoalType, number> = {
+  cutting: 2.6,
+  mini_cut: 2.6,
+  bulking: 2.3,
+  mini_bulk: 2.3,
+  maintenance: 2.3
+};
+
+const FAT_CALORIE_RATIO = 0.2;
 
 export interface TargetInput {
   heightCm: number;
@@ -39,6 +47,7 @@ export interface TargetInput {
   goalType: GoalType;
   weightChangeSpeed?: WeightChangeSpeed;
   targetSkeletalMuscleMassKg?: number;
+  bodyFatPercent?: number;
 }
 
 export interface TargetOutput {
@@ -50,17 +59,27 @@ export interface TargetOutput {
   targetFatG: number;
 }
 
-// Mifflin-St Jeor
-export function calculateBMR({ heightCm, weightKg, age, sex }: Pick<TargetInput, 'heightCm' | 'weightKg' | 'age' | 'sex'>): number {
+// 체지방률이 있으면 Katch-McArdle(제지방량 기반, 보디빌더에게 더 정확), 없으면 Mifflin-St Jeor로 폴백.
+export function calculateBMR({
+  heightCm,
+  weightKg,
+  age,
+  sex,
+  bodyFatPercent
+}: Pick<TargetInput, 'heightCm' | 'weightKg' | 'age' | 'sex' | 'bodyFatPercent'>): number {
+  if (bodyFatPercent && bodyFatPercent > 0 && bodyFatPercent < 100) {
+    const leanMassKg = weightKg * (1 - bodyFatPercent / 100);
+    return Math.round(370 + 21.6 * leanMassKg);
+  }
   const base = 10 * weightKg + 6.25 * heightCm - 5 * age;
   return Math.round(sex === 'male' ? base + 5 : base - 161);
 }
 
 // 단백질 필요량은 체지방을 포함한 총 체중보다 근육량에 더 비례하므로,
 // 목표 골격근량이 입력돼 있으면 체중 대신 그 값을 기준으로 계산합니다.
-function macrosFromCalories(targetCalories: number, weightKg: number, targetSkeletalMuscleMassKg?: number) {
+function macrosFromCalories(targetCalories: number, weightKg: number, goalType: GoalType, targetSkeletalMuscleMassKg?: number) {
   const proteinBaseKg = targetSkeletalMuscleMassKg && targetSkeletalMuscleMassKg > 0 ? targetSkeletalMuscleMassKg : weightKg;
-  const targetProteinG = Math.round(proteinBaseKg * PROTEIN_G_PER_KG);
+  const targetProteinG = Math.round(proteinBaseKg * PROTEIN_G_PER_KG[goalType]);
   const targetFatG = Math.round((targetCalories * FAT_CALORIE_RATIO) / 9);
   const remainingCalories = targetCalories - targetProteinG * 4 - targetFatG * 9;
   const targetCarbG = Math.max(0, Math.round(remainingCalories / 4));
@@ -72,7 +91,7 @@ export function calculateTargets(input: TargetInput): TargetOutput {
   const tdee = Math.round(bmr * ACTIVITY_MULTIPLIER[input.activityLevel]);
   const speedMultiplier = WEIGHT_CHANGE_SPEED_MULTIPLIER[input.weightChangeSpeed ?? 'normal'];
   const targetCalories = Math.max(1200, tdee + Math.round(GOAL_CALORIE_ADJUSTMENT[input.goalType] * speedMultiplier));
-  const macros = macrosFromCalories(targetCalories, input.weightKg, input.targetSkeletalMuscleMassKg);
+  const macros = macrosFromCalories(targetCalories, input.weightKg, input.goalType, input.targetSkeletalMuscleMassKg);
 
   return { bmr, tdee, targetCalories, ...macros };
 }
@@ -97,7 +116,7 @@ export function calculateWeeklyCurriculum(input: TargetInput, durationWeeks: num
   for (let week = 1; week <= durationWeeks; week += 1) {
     const progress = durationWeeks === 1 ? 1 : (week - 1) / (durationWeeks - 1);
     const targetCalories = Math.round(startCalories + (finalTargets.targetCalories - startCalories) * progress);
-    const macros = macrosFromCalories(targetCalories, input.weightKg, input.targetSkeletalMuscleMassKg);
+    const macros = macrosFromCalories(targetCalories, input.weightKg, input.goalType, input.targetSkeletalMuscleMassKg);
     entries.push({ week, targetCalories, ...macros });
   }
   return entries;

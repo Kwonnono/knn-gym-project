@@ -127,7 +127,8 @@ export async function saveGoalAction(formData: FormData): Promise<void> {
     activityLevel,
     goalType,
     weightChangeSpeed,
-    targetSkeletalMuscleMassKg: targetSkeletalMuscleMassKg ?? undefined
+    targetSkeletalMuscleMassKg: targetSkeletalMuscleMassKg ?? undefined,
+    bodyFatPercent: bodyFatPercent ?? undefined
   });
 
   const { error } = await supabase.from('goals').upsert(
