@@ -112,6 +112,9 @@ const dictionary = {
     diet: {
       title: '오늘의 식단 기록',
       mealName: '음식 이름 (예: 닭가슴살 샐러드)',
+      mealNumberLabel: '식사 차수',
+      mealNumbers: ['1번째 식사', '2번째 식사', '3번째 식사', '4번째 식사', '5번째 식사'],
+      unclassifiedMeal: '미분류',
       gramsLabel: '중량 (g) — 프리셋 음식 선택 시 자동 환산',
       calories: '칼로리 (kcal)',
       protein: '단백질 (g)',
@@ -333,6 +336,9 @@ const dictionary = {
     diet: {
       title: "Today's diet log",
       mealName: 'Food name (e.g. Chicken salad)',
+      mealNumberLabel: 'Meal number',
+      mealNumbers: ['1st Meal', '2nd Meal', '3rd Meal', '4th Meal', '5th Meal'],
+      unclassifiedMeal: 'Unclassified',
       gramsLabel: 'Grams (g) — auto-fills when a preset food is selected',
       calories: 'Calories (kcal)',
       protein: 'Protein (g)',

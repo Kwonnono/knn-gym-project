@@ -12,6 +12,8 @@ export function DietForm({
 }: {
   labels: {
     mealName: string;
+    mealNumberLabel: string;
+    mealNumbers: string[];
     gramsLabel: string;
     calories: string;
     protein: string;
@@ -63,6 +65,13 @@ export function DietForm({
           <option key={f.name} value={f.name} />
         ))}
       </datalist>
+      <select name="mealNumber" required defaultValue="1" className={`col-span-2 ${inputClass}`} aria-label={labels.mealNumberLabel}>
+        {labels.mealNumbers.map((label, i) => (
+          <option key={i} value={i + 1}>
+            {label}
+          </option>
+        ))}
+      </select>
       {preset && (
         <input
           type="number"

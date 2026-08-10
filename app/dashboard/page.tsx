@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { TargetIcon } from '@/components/icons';
@@ -6,6 +7,7 @@ import { getLocale, getDictionary, type Dictionary } from '@/lib/i18n';
 import { getSetCount, getTotalVolume } from '@/lib/workoutVolume';
 import { calculateWeeklyCurriculum, type WeightChangeSpeed } from '@/lib/calc';
 import { WeightChart } from '@/components/WeightChart';
+import { groupDietLogsByMeal } from '@/lib/mealGroups';
 
 function startOfToday(): string {
   const d = new Date();
@@ -77,7 +79,7 @@ export default async function DashboardPage() {
 
   const remainingCalories = goal.target_calories - consumed.calories;
   const goalLabel = t.goalLabels[goal.goal_type as keyof typeof t.goalLabels] ?? goal.goal_type;
-  const recentDietLogs = (dietLogs ?? []).slice(0, 5);
+  const dietMealGroups = groupDietLogsByMeal(dietLogs ?? []);
   const recentWorkoutLogs = (workoutLogs ?? []).slice(0, 5);
 
   const withinTolerance = (value: number, target: number) => target > 0 && value / target >= 0.95 && value / target <= 1.1;
@@ -174,21 +176,32 @@ export default async function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {recentDietLogs.length === 0 && (
+                  {(dietLogs ?? []).length === 0 && (
                     <tr>
                       <td colSpan={5} className="px-4 py-6 text-center text-neutral-500 dark:text-neutral-400">
                         {t.dashboard.noLogsYet}
                       </td>
                     </tr>
                   )}
-                  {recentDietLogs.map((log) => (
-                    <tr key={log.id} className="border-t border-neutral-100 dark:border-neutral-900">
-                      <td className="px-4 py-2 font-medium">{log.meal_name}</td>
-                      <td className="px-4 py-2">{log.calories}kcal</td>
-                      <td className="px-4 py-2">{log.protein_g}g</td>
-                      <td className="px-4 py-2">{log.carb_g}g</td>
-                      <td className="px-4 py-2">{log.fat_g}g</td>
-                    </tr>
+                  {dietMealGroups.map((group) => (
+                    <Fragment key={`group-${group.mealNumber ?? 'none'}`}>
+                      <tr className="border-t border-neutral-100 bg-neutral-50 dark:border-neutral-900 dark:bg-neutral-900">
+                        <td colSpan={5} className="px-4 py-1.5 text-xs font-medium text-neutral-500 dark:text-neutral-400">
+                          {group.mealNumber === null
+                            ? t.diet.unclassifiedMeal
+                            : t.diet.mealNumbers[group.mealNumber - 1] ?? t.diet.unclassifiedMeal}
+                        </td>
+                      </tr>
+                      {group.logs.map((log) => (
+                        <tr key={log.id} className="border-t border-neutral-100 dark:border-neutral-900">
+                          <td className="px-4 py-2 font-medium">{log.meal_name}</td>
+                          <td className="px-4 py-2">{log.calories}kcal</td>
+                          <td className="px-4 py-2">{log.protein_g}g</td>
+                          <td className="px-4 py-2">{log.carb_g}g</td>
+                          <td className="px-4 py-2">{log.fat_g}g</td>
+                        </tr>
+                      ))}
+                    </Fragment>
                   ))}
                 </tbody>
               </table>

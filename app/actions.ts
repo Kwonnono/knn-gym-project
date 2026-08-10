@@ -166,6 +166,7 @@ export async function addDietLogAction(formData: FormData): Promise<void> {
   if (!user) redirect('/login');
 
   const mealName = String(formData.get('mealName') ?? '').trim();
+  const mealNumber = formData.get('mealNumber') ? Number(formData.get('mealNumber')) : null;
   const calories = Number(formData.get('calories'));
   const proteinG = Number(formData.get('proteinG') ?? 0);
   const carbG = Number(formData.get('carbG') ?? 0);
@@ -178,6 +179,7 @@ export async function addDietLogAction(formData: FormData): Promise<void> {
   const { error } = await supabase.from('diet_logs').insert({
     user_id: user!.id,
     meal_name: mealName,
+    meal_number: mealNumber,
     calories,
     protein_g: proteinG,
     carb_g: carbG,
@@ -204,6 +206,7 @@ export async function updateDietLogAction(formData: FormData): Promise<void> {
   const id = String(formData.get('id') ?? '');
   const redirectTo = String(formData.get('redirectTo') ?? '/diet');
   const mealName = String(formData.get('mealName') ?? '').trim();
+  const mealNumber = formData.get('mealNumber') ? Number(formData.get('mealNumber')) : null;
   const calories = Number(formData.get('calories'));
   const proteinG = Number(formData.get('proteinG') ?? 0);
   const carbG = Number(formData.get('carbG') ?? 0);
@@ -215,7 +218,7 @@ export async function updateDietLogAction(formData: FormData): Promise<void> {
 
   const { error } = await supabase
     .from('diet_logs')
-    .update({ meal_name: mealName, calories, protein_g: proteinG, carb_g: carbG, fat_g: fatG })
+    .update({ meal_name: mealName, meal_number: mealNumber, calories, protein_g: proteinG, carb_g: carbG, fat_g: fatG })
     .eq('id', id)
     .eq('user_id', user!.id);
 

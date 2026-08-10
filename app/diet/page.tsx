@@ -46,6 +46,8 @@ export default async function DietPage({
       <DietForm
         labels={{
           mealName: t.diet.mealName,
+          mealNumberLabel: t.diet.mealNumberLabel,
+          mealNumbers: t.diet.mealNumbers,
           gramsLabel: t.diet.gramsLabel,
           calories: t.diet.calories,
           protein: t.diet.protein,
@@ -69,7 +71,10 @@ export default async function DietPage({
           delete: t.diet.delete,
           save: t.diet.save,
           cancel: t.diet.cancel,
-          confirmDelete: t.diet.confirmDelete
+          confirmDelete: t.diet.confirmDelete,
+          mealNumberLabel: t.diet.mealNumberLabel,
+          mealNumbers: t.diet.mealNumbers,
+          unclassifiedMeal: t.diet.unclassifiedMeal
         }}
       />
     </div>

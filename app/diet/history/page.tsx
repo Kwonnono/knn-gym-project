@@ -96,7 +96,10 @@ export default async function DietHistoryPage({
               delete: t.diet.delete,
               save: t.diet.save,
               cancel: t.diet.cancel,
-              confirmDelete: t.diet.confirmDelete
+              confirmDelete: t.diet.confirmDelete,
+              mealNumberLabel: t.diet.mealNumberLabel,
+              mealNumbers: t.diet.mealNumbers,
+              unclassifiedMeal: t.diet.unclassifiedMeal
             }}
           />
         </div>
