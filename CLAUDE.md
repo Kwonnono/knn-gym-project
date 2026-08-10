@@ -70,7 +70,7 @@ supabase/
 
 ## 미완료/보류 항목
 
-1. **SQL 마이그레이션 실행 여부 재확인 필요** — `supabase/002_workout_categories.sql`, `supabase/003_goal_types.sql`을 Supabase SQL Editor에서 실행했는지 사용자에게 확인 안 됨. 실행 안 했다면 미니컷/미니벌크 저장, 운동 부위별 탭 저장이 실패함.
+1. **SQL 마이그레이션 미실행 확인됨** (2026-08-10) — 브라우저로 실제 계정 로그인해 운동 기록 추가를 테스트한 결과 `Could not find the 'category' column of 'workout_logs' in the schema cache` 에러 확인. `supabase/002_workout_categories.sql`, `003_goal_types.sql`이 실행되지 않은 상태로 보임. 이번 세션에서 추가한 `004_workout_sets_data.sql`, `005_goal_curriculum_fields.sql`도 함께 실행 필요 — 002→003→004→005 순서로 Supabase SQL Editor에서 실행해야 함. 실행 전까지 운동 부위별 탭/기록, 미니컷·미니벌크 저장, 세트별 동적 입력, 목표 기간·커리큘럼 기능이 모두 실패함 (식단 관련 기능은 이 마이그레이션들과 무관해 정상 동작 확인됨).
 2. **배포 안 됨** — 로컬 개발 서버로만 확인 가능. 실서비스로 쓰려면 Vercel 등에 배포 + 환경변수 설정 필요.
 3. **에러 메시지 다국어**: 서버 액션에서 발생하는 에러는 대부분 번역됐지만, Supabase가 직접 반환하는 에러 메시지(`error.message`, 예: 이메일 중복 등)는 Supabase 자체 언어(영어)로 나올 수 있음 — 번역 레이어를 안 씌움.
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { updateDietLogAction, deleteDietLogAction } from '@/app/actions';
 
 interface DietLog {
@@ -37,6 +37,10 @@ export function DietLogTable({
   };
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setEditingId(null);
+  }, [logs]);
 
   return (
     <div className="overflow-x-auto rounded-xl border border-neutral-200 shadow-sm dark:border-neutral-800">

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { updateWorkoutLogAction, deleteWorkoutLogAction } from '@/app/actions';
 import { getSetCount, getTotalVolume, type WorkoutSetEntry } from '@/lib/workoutVolume';
 
@@ -130,6 +130,10 @@ export function WorkoutLogTable({
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const colSpan = isCardio ? 4 : 4;
+
+  useEffect(() => {
+    setEditingId(null);
+  }, [logs]);
 
   return (
     <div className="overflow-x-auto rounded-xl border border-neutral-200 shadow-sm dark:border-neutral-800">
