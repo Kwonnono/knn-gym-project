@@ -31,22 +31,18 @@ export function DateNav({ date, todayLabel }: { date: string; todayLabel: string
       <input
         type="date"
         defaultValue={date}
-        max={todayKey}
         onChange={(e) => {
           if (e.target.value) router.push(`/dashboard?date=${e.target.value}`);
         }}
         className="rounded-lg border border-neutral-300 bg-white px-2 py-1 text-sm dark:border-neutral-700 dark:bg-neutral-900"
       />
-      {isToday ? (
-        <span className="text-xs text-neutral-400 dark:text-neutral-500">({todayLabel})</span>
-      ) : (
-        <a
-          href={`/dashboard?date=${toDateKey(next)}`}
-          className="rounded-lg px-2 py-1 text-neutral-500 transition-colors hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-900"
-        >
-          ›
-        </a>
-      )}
+      <a
+        href={`/dashboard?date=${toDateKey(next)}`}
+        className="rounded-lg px-2 py-1 text-neutral-500 transition-colors hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-900"
+      >
+        ›
+      </a>
+      {isToday && <span className="text-xs text-neutral-400 dark:text-neutral-500">({todayLabel})</span>}
     </div>
   );
 }
