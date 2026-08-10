@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { addWorkoutLogAction } from '@/app/actions';
 import { getLocale, getDictionary, type Dictionary } from '@/lib/i18n';
+import { EXERCISE_PRESETS } from '@/lib/exercises';
+import { WorkoutForm } from '@/components/WorkoutForm';
 
 function startOfToday(): string {
   const d = new Date();
@@ -20,9 +21,6 @@ function getCategories(t: Dictionary): { value: string; label: string }[] {
     { value: 'cardio', label: t.workout.categoryCardio }
   ];
 }
-
-const inputClass =
-  'rounded-lg border border-neutral-300 bg-white px-3 py-2 transition-colors focus:border-neutral-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:focus:border-neutral-500';
 
 export default async function WorkoutPage({
   searchParams
@@ -73,31 +71,22 @@ export default async function WorkoutPage({
 
       {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
 
-      <form
-        action={addWorkoutLogAction}
-        className="grid grid-cols-3 gap-3 rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-950"
-      >
-        <input type="hidden" name="category" value={category} />
-        <input name="exercise" placeholder={t.workout.exerciseName} required className={`col-span-3 ${inputClass}`} />
-        {isCardio ? (
-          <>
-            <input name="durationMin" type="number" placeholder={t.workout.durationMin} required className={inputClass} />
-            <input name="distanceKm" type="number" step="0.1" placeholder={t.workout.distanceKm} className={`col-span-2 ${inputClass}`} />
-          </>
-        ) : (
-          <>
-            <input name="sets" type="number" placeholder={t.workout.sets} required className={inputClass} />
-            <input name="reps" type="number" placeholder={t.workout.reps} required className={inputClass} />
-            <input name="weightKg" type="number" step="0.5" placeholder={t.workout.weightKg} className={inputClass} />
-          </>
-        )}
-        <button
-          type="submit"
-          className="col-span-3 rounded-lg bg-black px-3 py-2 font-medium text-white transition-colors hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
-        >
-          {t.workout.submit}
-        </button>
-      </form>
+      <WorkoutForm
+        category={category}
+        isCardio={isCardio}
+        exercisePresets={EXERCISE_PRESETS[category] ?? []}
+        labels={{
+          exerciseName: t.workout.exerciseName,
+          selectExercise: t.workout.selectExercise,
+          customExercise: t.workout.customExercise,
+          durationMin: t.workout.durationMin,
+          distanceKm: t.workout.distanceKm,
+          sets: t.workout.sets,
+          reps: t.workout.reps,
+          weightKg: t.workout.weightKg,
+          submit: t.workout.submit
+        }}
+      />
 
       <div className="overflow-x-auto rounded-xl border border-neutral-200 shadow-sm dark:border-neutral-800">
         <table className="w-full text-sm">

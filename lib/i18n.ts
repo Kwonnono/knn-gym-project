@@ -100,6 +100,7 @@ const dictionary = {
     diet: {
       title: '오늘의 식단 기록',
       mealName: '음식 이름 (예: 닭가슴살 샐러드)',
+      gramsLabel: '중량 (g) — 프리셋 음식 선택 시 자동 환산',
       calories: '칼로리 (kcal)',
       protein: '단백질 (g)',
       carb: '탄수화물 (g)',
@@ -123,6 +124,8 @@ const dictionary = {
       categoryCore: '코어',
       categoryCardio: '유산소',
       exerciseName: '운동 이름',
+      selectExercise: '운동 종목 선택',
+      customExercise: '직접 입력',
       durationMin: '시간 (분)',
       distanceKm: '거리 (km, 선택)',
       sets: '세트',
@@ -277,6 +280,7 @@ const dictionary = {
     diet: {
       title: "Today's diet log",
       mealName: 'Food name (e.g. Chicken salad)',
+      gramsLabel: 'Grams (g) — auto-fills when a preset food is selected',
       calories: 'Calories (kcal)',
       protein: 'Protein (g)',
       carb: 'Carbs (g)',
@@ -300,6 +304,8 @@ const dictionary = {
       categoryCore: 'Core',
       categoryCardio: 'Cardio',
       exerciseName: 'Exercise name',
+      selectExercise: 'Select exercise',
+      customExercise: 'Enter custom',
       durationMin: 'Duration (min)',
       distanceKm: 'Distance (km, optional)',
       sets: 'Sets',
