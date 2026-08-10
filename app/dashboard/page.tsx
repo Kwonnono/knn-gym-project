@@ -246,9 +246,9 @@ export default async function DashboardPage() {
               <h2 className="font-display text-lg tracking-wide">{t.dashboard.weightChartTitle}</h2>
               <a href="/weight" className="text-sm underline">{t.dashboard.viewAll}</a>
             </div>
-            <div className="mt-2 min-h-0 flex-1 px-0.5 pb-0.5">
+            <div className="mt-2 flex min-h-0 flex-1 flex-col items-center justify-center px-0.5 pb-0.5">
               {weightPoints.length > 0 ? (
-                <WeightChart points={weightPoints} />
+                <WeightChart points={weightPoints} locale={locale} />
               ) : (
                 <p className="flex h-full min-h-[100px] items-center justify-center text-sm text-neutral-500 dark:text-neutral-400">
                   {t.dashboard.noWeightLogs}
