@@ -80,7 +80,10 @@ export function DietLogTable({
           {groups.map((group) => (
             <Fragment key={`group-${group.mealNumber ?? 'none'}`}>
               <tr className="border-t border-neutral-100 bg-neutral-50 dark:border-neutral-900 dark:bg-neutral-900">
-                <td colSpan={6} className="px-4 py-1.5 text-xs font-medium text-neutral-500 dark:text-neutral-400">
+                <td
+                  colSpan={6}
+                  className="px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400"
+                >
                   {mealGroupLabel(group.mealNumber, labels)}
                 </td>
               </tr>

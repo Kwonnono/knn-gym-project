@@ -107,7 +107,9 @@ const dictionary = {
       exercise: '운동',
       content: '내용',
       cardioContent: (duration: number, distance: number | null) => `${duration}분${distance ? ` · ${distance}km` : ''}`,
-      strengthContent: (setsCount: number, totalVolume: number) => `${setsCount}세트 · 총 ${totalVolume}kg`
+      strengthContent: (setsCount: number, totalVolume: number) => `${setsCount}세트 · 총 ${totalVolume}kg`,
+      strengthSetDetail: (weightKg: number, reps: number, remaining: number) =>
+        `${weightKg}kg × ${reps}회${remaining > 0 ? ` 외 ${remaining}세트` : ''}`
     },
     diet: {
       title: '오늘의 식단 기록',
@@ -331,7 +333,9 @@ const dictionary = {
       exercise: 'Exercise',
       content: 'Details',
       cardioContent: (duration: number, distance: number | null) => `${duration}min${distance ? ` · ${distance}km` : ''}`,
-      strengthContent: (setsCount: number, totalVolume: number) => `${setsCount} sets · ${totalVolume}kg total`
+      strengthContent: (setsCount: number, totalVolume: number) => `${setsCount} sets · ${totalVolume}kg total`,
+      strengthSetDetail: (weightKg: number, reps: number, remaining: number) =>
+        `${weightKg}kg × ${reps} reps${remaining > 0 ? ` +${remaining} more sets` : ''}`
     },
     diet: {
       title: "Today's diet log",
