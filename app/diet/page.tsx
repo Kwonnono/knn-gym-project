@@ -35,7 +35,7 @@ export default async function DietPage({
   const t = getDictionary(locale);
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-4xl space-y-6">
       <h1 className="font-display text-3xl tracking-wide">{t.diet.title}</h1>
 
       {error && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}

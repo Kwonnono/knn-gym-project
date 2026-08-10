@@ -52,7 +52,7 @@ export default async function WorkoutPage({
     .order('created_at', { ascending: false });
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-4xl space-y-6">
       <h1 className="font-display text-3xl tracking-wide">{t.workout.title}</h1>
 
       <div className="flex flex-wrap gap-2 border-b border-neutral-200 pb-3 dark:border-neutral-800">

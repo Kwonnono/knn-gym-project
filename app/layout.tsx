@@ -44,18 +44,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
       <body className="font-sans">
-        <header className="flex items-center justify-between border-b border-neutral-200 bg-white px-6 py-4 dark:border-neutral-800 dark:bg-black">
-          <a href={user ? '/dashboard' : '/'} className="flex flex-col items-center gap-0.5 leading-none">
-            <svg width="30" height="14" viewBox="0 0 34 16" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0">
+        <header className="grid grid-cols-[1fr_auto_1fr] items-center border-b border-neutral-200 bg-white px-6 py-4 dark:border-neutral-800 dark:bg-black">
+          <div aria-hidden="true" />
+          <a href={user ? '/dashboard' : '/'} className="flex flex-col items-center justify-self-center gap-1 leading-none">
+            <svg width="42" height="20" viewBox="0 0 34 16" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0">
               <rect x="1" y="5" width="3" height="6" />
               <rect x="6" y="3" width="2.5" height="10" />
               <line x1="9" y1="8" x2="25" y2="8" />
               <rect x="25.5" y="3" width="2.5" height="10" />
               <rect x="30" y="5" width="3" height="6" />
             </svg>
-            <span className="font-display text-xl tracking-wide">BULK &amp; CUT</span>
+            <span className="font-display text-2xl tracking-wide">BULK &amp; CUT</span>
           </a>
-          <nav className="flex items-center gap-4 text-sm">
+          <nav className="flex items-center justify-self-end gap-4 text-sm">
             {user ? (
               <>
                 <a href="/dashboard" title={t.nav.home} aria-label={t.nav.home} className={iconLinkClass}>
@@ -96,7 +97,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <ThemeToggle />
           </nav>
         </header>
-        <main className="mx-auto max-w-4xl px-6 py-8">{children}</main>
+        <main className="px-6 py-8">{children}</main>
       </body>
     </html>
   );

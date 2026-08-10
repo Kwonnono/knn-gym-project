@@ -70,10 +70,11 @@ supabase/
 
 ## 미완료/보류 항목
 
-1. **Supabase 이메일 확인(Confirm email)이 아직 켜져 있음** — 사용자가 개발 편의를 위해 끄고 싶어했으나, Supabase 대시보드 로그인이 필요해서 미완료 상태. 대시보드 URL: `https://supabase.com/dashboard/project/bjmplitrbuqalbljccqu/auth/providers`. 로그인은 사용자가 직접 해야 함(비밀번호 대신 입력 불가).
-2. **SQL 마이그레이션 실행 여부 재확인 필요** — `supabase/002_workout_categories.sql`, `supabase/003_goal_types.sql`을 Supabase SQL Editor에서 실행했는지 사용자에게 확인 안 됨. 실행 안 했다면 미니컷/미니벌크 저장, 운동 부위별 탭 저장이 실패함.
-3. **배포 안 됨** — 로컬 개발 서버로만 확인 가능. 실서비스로 쓰려면 Vercel 등에 배포 + 환경변수 설정 필요.
-4. **에러 메시지 다국어**: 서버 액션에서 발생하는 에러는 대부분 번역됐지만, Supabase가 직접 반환하는 에러 메시지(`error.message`, 예: 이메일 중복 등)는 Supabase 자체 언어(영어)로 나올 수 있음 — 번역 레이어를 안 씌움.
+1. **SQL 마이그레이션 실행 여부 재확인 필요** — `supabase/002_workout_categories.sql`, `supabase/003_goal_types.sql`을 Supabase SQL Editor에서 실행했는지 사용자에게 확인 안 됨. 실행 안 했다면 미니컷/미니벌크 저장, 운동 부위별 탭 저장이 실패함.
+2. **배포 안 됨** — 로컬 개발 서버로만 확인 가능. 실서비스로 쓰려면 Vercel 등에 배포 + 환경변수 설정 필요.
+3. **에러 메시지 다국어**: 서버 액션에서 발생하는 에러는 대부분 번역됐지만, Supabase가 직접 반환하는 에러 메시지(`error.message`, 예: 이메일 중복 등)는 Supabase 자체 언어(영어)로 나올 수 있음 — 번역 레이어를 안 씌움.
+
+**결정**: Supabase 이메일 확인(Confirm email)은 그대로 유지하기로 함 (2026-08-10, 사용자 확인).
 
 ## 작업 스타일 메모
 

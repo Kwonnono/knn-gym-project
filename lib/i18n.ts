@@ -79,6 +79,9 @@ const dictionary = {
       navWorkoutTitle: '운동 기록',
       navWorkoutDesc: '부위별 운동 기록하기',
       todayIntake: '오늘 섭취',
+      remainingCalories: '남은 칼로리',
+      weightGraphComingSoon: '체중 변화 그래프 (준비 중)',
+      goalAchieved: '오늘의 목표 달성!',
       calories: '칼로리',
       protein: '단백질',
       carb: '탄수화물',
@@ -148,7 +151,10 @@ const dictionary = {
       targetCalories: '목표 칼로리',
       noGoal: '아직 목표가 설정되지 않았습니다.',
       resetGoal: '목표 다시 설정하기',
-      backHome: '홈으로 돌아가기'
+      backHome: '홈으로 돌아가기',
+      streakDays: '연속 기록일',
+      freePlan: 'Free Plan',
+      proComingSoon: 'Pro (준비 중)'
     },
     settings: {
       title: '설정',
@@ -250,6 +256,9 @@ const dictionary = {
       navWorkoutTitle: 'Workout Log',
       navWorkoutDesc: 'Log your workout by body part',
       todayIntake: "Today's intake",
+      remainingCalories: 'Calories remaining',
+      weightGraphComingSoon: 'Weight trend graph (coming soon)',
+      goalAchieved: "Today's goal achieved!",
       calories: 'Calories',
       protein: 'Protein',
       carb: 'Carbs',
@@ -319,7 +328,10 @@ const dictionary = {
       targetCalories: 'Target calories',
       noGoal: 'No goal set yet.',
       resetGoal: 'Reset your goal',
-      backHome: 'Back to home'
+      backHome: 'Back to home',
+      streakDays: 'Day streak',
+      freePlan: 'Free Plan',
+      proComingSoon: 'Pro (coming soon)'
     },
     settings: {
       title: 'Settings',

@@ -10,7 +10,7 @@ export default async function HomePage() {
   const t = getDictionary(locale);
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-4xl space-y-6">
       <h1 className="font-display text-5xl leading-none tracking-wide">
         BULK &amp; CUT
       </h1>
