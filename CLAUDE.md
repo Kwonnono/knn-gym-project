@@ -12,14 +12,16 @@
 ## 핵심 기능
 
 - 회원가입/로그인/로그아웃 (Supabase Auth)
-- 목표 설정(`/profile`): 키/몸무게/나이/성별/활동량/목표(커팅·벌크업·유지·미니컷·미니벌크) + 감량/증량 속도(느림/보통/빠름)·목표 기간(주)·목표 체지방률·골격근량·현재 체지방률(전부 선택) 입력 → BMR/TDEE/목표 칼로리·탄단지 자동 계산 (`lib/calc.ts`, Mifflin-St Jeor 공식). 목표 기간을 입력하면 TDEE→최종 목표 칼로리로 선형 보간되는 주차별 커리큘럼(`calculateWeeklyCurriculum`)도 계산됨.
-- 홈(`/dashboard`): 2열 그리드 레이아웃(좌 60%/우 40%). 남은 칼로리 강조 표시 + 색상별 매크로 프로그레스 바(단백질 rose/탄수 emerald/지방 amber), 오늘 목표 달성 시 배지 표시, 오늘 식단·운동 기록 미리보기, +식단/+운동 빠른 기록 카드, 이번 주 커리큘럼 카드(목표 기간 설정 시), 체중 그래프 placeholder(추후 구현)
-- 식단 기록(`/diet`): 음식 이름 입력 시 로컬 프리셋(`lib/foodPresets.ts`, 자주 먹는 음식 ~35개)과 매칭되면 그램 수 입력으로 칼로리/탄단지 자동 환산. 등록된 기록 수정/삭제(인라인) 가능. `/diet/history`에서 월별 캘린더로 과거 날짜 기록 조회(같은 수정/삭제 UI 재사용)
-- 운동 기록(`/workout`): 부위별 탭(가슴/등/어깨/팔/하체/코어) + 유산소 탭(별도 필드: 시간/거리). 부위별 기본 종목 드롭다운(`lib/exercises.ts`) + "직접 입력"으로 커스텀 종목 가능. 근력 운동은 "+ 세트 추가"로 세트별 무게/횟수를 동적으로 입력(`sets_data` jsonb 컬럼), 총 세트수·총 볼륨 자동 계산(`lib/workoutVolume.ts`). 기록 수정/삭제 가능
+- 목표 설정(`/profile`): 키/몸무게/나이/성별/활동량*(필수, 라벨 옆 빨간 `*`) + 목표(커팅·벌크업·유지·미니컷·미니벌크, 목표 바로 아래에 목표 기간(주)) + 감량/증량 속도(느림/보통/빠름)·목표 체지방률·**현재/목표 골격근량(분리됨)**·현재 체지방률(전부 선택) 입력 → BMR/목표 칼로리·탄단지 자동 계산 (`lib/calc.ts`, Mifflin-St Jeor 공식). **목표 골격근량이 입력되면 단백질 목표는 체중이 아니라 목표 골격근량 기준(×2g)으로 계산됨** (근육량이 있으면 그걸 우선). 목표 기간을 입력하면 TDEE→최종 목표 칼로리로 선형 보간되는 주차별 커리큘럼(`calculateWeeklyCurriculum`)도 계산됨(현재 대시보드에는 미노출, 아래 진행중 항목 참고).
+- 홈(`/dashboard`): 2열 그리드 레이아웃(좌 60%/우 40%, 우측 컬럼 하단이 좌측과 정확히 맞도록 `flex flex-col` + `flex-1`/`overflow-hidden` 조정됨). 상단 타이틀 "Dashboard" + 목표 요약(BMR만 표시, TDEE 제거됨). 남은 칼로리 강조 표시 + 색상별 매크로 프로그레스 바(단백질 rose/탄수 emerald/지방 amber), 오늘 목표 달성 시 배지, 오늘 식단(회차별 그룹 헤더 포함)·운동 기록 미리보기, 체중 변화 SVG 라인 차트(`components/WeightChart.tsx`, 라이브러리 없이 직접 구현). **2026-08-10 늦은 세션에 대시보드 대규모 재정리 진행 중 — 아래 "진행 중인 작업" 섹션 필수 확인.**
+- 식단 기록(`/diet`): 음식 이름 입력 시 로컬 프리셋(`lib/foodPresets.ts`, 자주 먹는 음식 ~35개)과 매칭되면 그램 수 입력으로 칼로리/탄단지 자동 환산. **1~5회차(끼니) 선택 드롭다운**(기본값 1회차) 추가돼 있고, 목록은 회차별로 그룹 헤더(예: "1ST MEAL")로 묶여서 표시됨(`lib/mealGroups.ts`). 등록된 기록 수정/삭제(인라인) 가능. `/diet/history`에서 월별 캘린더로 과거 날짜 기록 조회(같은 수정/삭제 UI 재사용, 단 이 페이지엔 신규 등록 폼은 없음 — 조회+수정+삭제만).
+- 운동 기록(`/workout`): 부위별 탭(가슴/등/어깨/팔/하체/코어) + 유산소 탭(별도 필드: 시간/거리). 부위별 기본 종목 드롭다운(`lib/exercises.ts`) + "직접 입력"으로 커스텀 종목 가능. 근력 운동은 "+ 세트 추가"로 세트별 무게/횟수를 동적으로 입력(`sets_data` jsonb 컬럼), 총 세트수·총 볼륨 자동 계산(`lib/workoutVolume.ts`). 기록 수정/삭제 가능.
+- 체중 기록(`/weight`, 신규): 체중(kg) 입력 폼 + 목록(수정/삭제). `weight_logs` 테이블, 대시보드 차트가 최근 30일치를 조회해서 그림.
+- 헤더 내비게이션: 개별 아이콘 나열 대신 **햄버거 아이콘 드롭다운 메뉴**(`components/NavMenu.tsx`)로 통합됨 (Dashboard/Goal/Diet/Workout/Weight/Profile/Settings/Log out). **내비게이션 라벨과 대시보드 타이틀은 언어 토글과 무관하게 항상 영문**으로 통일(`lib/i18n.ts`의 `dictionary.ko.nav.*`/`dashboard.title` 값 자체를 영문 문자열로 넣어둠 — 토글 자체는 살아있지만 이 두 곳만 두 로케일이 같은 값).
 - 마이페이지(`/mypage`): 계정 요약(이름/이메일/현재 목표) + 연속 기록일수(스트릭, 식단·운동 기록 날짜 기반 계산) + Free Plan 배지(Pro는 결제 연동 없는 순수 UI placeholder)
 - 설정(`/settings`): 이름/닉네임 수정
 - 다크/라이트 모드 토글 (localStorage, `components/ThemeToggle.tsx`)
-- 한국어/영어 다국어 전환 (쿠키 기반, 기본 한국어, `components/LanguageToggle.tsx` + `lib/i18n.ts`)
+- 한국어/영어 다국어 전환 (쿠키 기반, 기본 한국어, `components/LanguageToggle.tsx` + `lib/i18n.ts`) — 단 위에 적은 대로 헤더 nav/대시보드 타이틀은 예외적으로 항상 영문.
 - 비밀번호 정책: NIST SP 800-63B 기반 (강제 조합 규칙 없음, 8~64자, 흔한 취약 비밀번호 블록) — `lib/passwordPolicy.ts`
 
 ## 폐기된 기능
@@ -37,29 +39,32 @@
 
 ```
 app/
-  layout.tsx        # 헤더(그리드로 로고 중앙 정렬)/네비(아이콘), 폰트, 테마 초기화 스크립트, i18n. <main>엔 더 이상 max-w 없음 — 각 페이지가 자체적으로 mx-auto max-w-* 래퍼를 가짐(대시보드만 max-w-6xl, 나머지는 max-w-4xl 이하)
+  layout.tsx        # 헤더(그리드로 로고 중앙 정렬 + NavMenu 드롭다운), 폰트, 테마 초기화 스크립트, i18n. <main>엔 더 이상 max-w 없음 — 각 페이지가 자체적으로 mx-auto max-w-* 래퍼를 가짐(대시보드만 max-w-6xl, 나머지는 max-w-4xl 이하)
   page.tsx           # 랜딩 페이지
   login/, signup/     # 인증
-  profile/            # 목표 설정 (기간/체지방/속도 등 커리큘럼 필드 포함)
-  dashboard/          # 홈 (2열 그리드)
-  diet/               # 오늘 식단 기록
-  diet/history/        # 캘린더로 과거 날짜 식단 조회
+  profile/            # 목표 설정 (필수 * 표시, 기간/체지방/속도/현재·목표 골격근량 등 커리큘럼 필드 포함)
+  dashboard/          # 홈 (2열 그리드) — 진행 중인 대규모 개편 있음, 아래 참고
+  diet/               # 오늘 식단 기록 (회차 선택 + 그룹 표시)
+  diet/history/        # 캘린더로 과거 날짜 식단 조회(등록 폼 없음, 조회+수정+삭제만)
   workout/            # 운동 기록 (부위별 탭 + 세트별 동적 입력)
+  weight/             # 체중 기록 (신규)
   mypage/, settings/   # 계정 관련
-  actions.ts          # 전체 서버 액션 (회원가입/로그인/목표저장/식단·운동 CRUD/프로필수정)
+  actions.ts          # 전체 서버 액션 (회원가입/로그인/목표저장/식단·운동·체중 CRUD/프로필수정)
 lib/
   supabase/server.ts, client.ts, middleware.ts   # Supabase SSR 클라이언트
-  calc.ts             # BMR/TDEE/매크로 계산 + 주차별 커리큘럼(calculateWeeklyCurriculum)
-  workoutVolume.ts    # 세트별 총 세트수/총 볼륨 계산 (sets_data 우선, 없으면 레거시 sets*reps*weight_kg)
+  calc.ts             # BMR/매크로 계산 + 주차별 커리큘럼(calculateWeeklyCurriculum) — targetSkeletalMuscleMassKg 있으면 단백질 계산 기준으로 사용
+  workoutVolume.ts    # 세트별 총 세트수/총 볼륨/대표 세트 상세(getFirstSetDetail) 계산 (sets_data 우선, 없으면 레거시 sets*reps*weight_kg)
+  mealGroups.ts        # 식단 로그를 meal_number 기준으로 그룹핑하는 공용 헬퍼 (대시보드+/diet+/diet/history 공용)
   exercises.ts        # 부위별 기본 운동 종목 프리셋
   foodPresets.ts       # 자주 먹는 음식 100g당 영양성분 프리셋 (로컬 하드코딩, 외부 API 없음)
   passwordPolicy.ts   # 비밀번호 검증
-  i18n.ts, i18n-constants.ts   # 다국어 사전 (i18n.ts는 서버 전용 — next/headers 사용, 클라이언트 컴포넌트는 반드시 i18n-constants.ts에서 import)
+  i18n.ts, i18n-constants.ts   # 다국어 사전 (i18n.ts는 서버 전용 — next/headers 사용, 클라이언트 컴포넌트는 반드시 i18n-constants.ts에서 import). nav.*와 dashboard.title은 ko/en 값이 동일(항상 영문).
 components/
-  icons.tsx, ThemeToggle.tsx, LanguageToggle.tsx
+  icons.tsx, ThemeToggle.tsx, LanguageToggle.tsx, NavMenu.tsx(헤더 드롭다운 메뉴)
   ProgressBar.tsx      # 색상 있는 매크로 프로그레스 바 (대시보드)
-  DietForm.tsx, DietLogTable.tsx       # 식단 입력 폼(자동환산) / 목록+인라인 수정·삭제 (클라이언트)
+  DietForm.tsx, DietLogTable.tsx       # 식단 입력 폼(자동환산+회차선택) / 목록+회차그룹+인라인 수정·삭제 (클라이언트)
   WorkoutForm.tsx, WorkoutLogTable.tsx  # 운동 입력 폼(종목선택+세트동적입력) / 목록+인라인 수정·삭제 (클라이언트)
+  WeightLogTable.tsx, WeightChart.tsx   # 체중 목록(수정/삭제) / SVG 라인 차트 (라이브러리 없이 직접 구현)
   Calendar.tsx          # 네이티브 Date 기반 월 캘린더 그리드 (식단 히스토리용)
 middleware.ts          # Supabase 세션 갱신
 supabase/
@@ -68,7 +73,10 @@ supabase/
   003_goal_types.sql               # goal_type에 미니컷/미니벌크 추가
   004_workout_sets_data.sql        # workout_logs에 sets_data jsonb 추가 (세트별 동적 입력)
   005_goal_curriculum_fields.sql   # goals에 duration_weeks/target_body_fat_percent/weight_change_speed/skeletal_muscle_mass_kg/body_fat_percent 추가
-  → 002~005 전부 Supabase SQL Editor에서 실행 완료 확인됨 (2026-08-10)
+  006_weight_logs.sql              # weight_logs 테이블 신설 (diet_logs/workout_logs와 동일한 RLS 패턴)
+  007_diet_meal_number.sql         # diet_logs에 meal_number smallint(1~5, nullable) 추가
+  008_goal_skeletal_muscle_target.sql  # goals.skeletal_muscle_mass_kg → current_skeletal_muscle_mass_kg로 rename + target_skeletal_muscle_mass_kg 컬럼 추가
+  → 002~008 전부 Supabase SQL Editor에서 실행 완료 확인됨 (002~005는 2026-08-10 오전, 006~008은 2026-08-10 오후에 확인)
 .claude/launch.json     # 미리보기용 dev 서버 설정 (npm run dev, autoPort:true — 다른 세션이 3000 점유 시 자동으로 다른 포트 사용)
 .env                    # NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY (git에는 없음, .gitignore 처리됨)
 ```
@@ -82,11 +90,27 @@ supabase/
 - **목표 커리큘럼**: `goals`는 사용자당 1행이라 주차별 계획을 DB에 저장하지 않고 `calculateWeeklyCurriculum`으로 매번 계산. "이번 주차"는 `goal.updated_at`(마지막 목표 저장 시점)을 시작일로 역산 — 목표를 다시 저장하면 주차 카운트가 리셋됨(의도된 단순화, 프로토타입 수준).
 - **클라이언트 테이블의 수정 상태 초기화**: `DietLogTable`/`WorkoutLogTable`은 Next.js 서버 액션 폼 제출 후 소프트 네비게이션으로 컴포넌트가 리마운트되지 않을 수 있어, `useEffect(() => setEditingId(null), [logs])`로 `logs` prop이 갱신될 때마다 편집 상태를 강제 초기화함 — 이게 없으면 저장 후에도 수정 폼이 계속 열려있는 채로 보임(실제 데이터는 저장되지만 UI가 안 닫힘).
 
+## 진행 중인 작업 (2026-08-10 늦은 세션, 아직 코드 미착수 — 다음 세션은 여기부터)
+
+사용자가 대시보드 UI/UX 통합 개선 6가지를 요청함. **아래 6개는 계획만 세웠고 실제 코드 변경은 아직 하나도 안 들어간 상태**(태스크 #16~21로 등록만 해둠). 순서대로 진행하면 됨:
+
+1. **`/workout` '전체' 탭 추가** — 카테고리 탭 맨 앞에 '전체' 추가, 기본 선택. '전체' 선택 시 카테고리 필터 없이 조회하되, 근력/유산소가 섞여 있어 기존 `WorkoutLogTable`(단일 타입 전제) 그대로 못 씀 → **결정: '전체' 뷰는 읽기 전용 요약(카테고리별 그룹 헤더 + 운동명 + 한 줄 설명, 인라인 수정 폼 없음)으로 구현하고, 개별 카테고리 탭을 눌러야 기존 수정/삭제 UI 사용 가능**하도록 스코프를 좁히기로 함(전체 뷰에서까지 mixed-type CRUD를 만들면 과도하게 커짐). 등록 폼도 '전체' 선택 시엔 숨김(카테고리가 특정돼야 등록 가능).
+2. **대시보드 운동 요약에서 총 볼륨 텍스트 제거** — `t.dashboard.strengthContent`를 `"3세트 · 100kg × 10회"` 형태 한 줄로 통합(현재는 "N세트 · 총 Xkg" + 별도 서브텍스트 "무게×횟수 외 N세트" 2줄 구조인데, 이 총볼륨/외N세트 문구를 없애고 대표 세트 하나만 보여주는 형태로 단순화). `getFirstSetDetail`(`lib/workoutVolume.ts`)은 그대로 재사용.
+3. **대시보드 중복 CTA 버튼 제거** — 우측 상단 '+ Diet Log' / '+ Workout Log' 큰 버튼 그리드(`app/dashboard/page.tsx`의 `grid grid-cols-2 gap-3` 블록) 삭제.
+4. **주간 커리큘럼 카드 제거 + 상단 요약 통합** — 우측의 "This week's plan" 카드(`weeklyTarget` 관련 JSX 전체) 삭제하고, 관련 계산 코드(`weeklyTarget` 변수, `calculateWeeklyCurriculum`/`WeightChangeSpeed` import)도 대시보드에서 제거(단 `lib/calc.ts`의 `calculateWeeklyCurriculum` 함수 자체는 남겨둠 — 다른 곳에서 쓸 수도 있는 순수 유틸이라 삭제 안 함). 대신 상단 타이틀 아래 목표 요약 줄(`goalLine`)에 단백질/탄수/지방 목표치도 포함하도록 문구 확장(현재는 목표타입/BMR/목표칼로리만 표시).
+5. **체중 차트 높이 축소 + 포인트 라벨** — `WeightChart.tsx` 재설계 필요: (a) 카드 자체는 계속 `flex-1`로 우측 컬럼 남는 공간을 채우되, 실제 SVG 그래프는 고정된 컴팩트한 높이로 만들고 남는 세로 공간엔 그냥 여백을 주거나 세로 중앙 정렬(`items-center justify-center`)해서 "차트가 너무 쭉 늘어나 보이는" 문제를 해결하기로 함(3번에서 카드들이 줄어들면 오히려 우측 컬럼 여유 공간이 늘어나므로 이 처리가 필요해짐). (b) 각 데이터 포인트 위/아래에 무게(예: "71kg")와 날짜(예: "8/10") 라벨을 작은 `<text>`로 표시 — 현재는 `preserveAspectRatio="none"`으로 비율 왜곡시켜 그리는 방식이라 텍스트를 넣으면 찌그러지므로, **고정 비율 viewBox로 방식을 바꿔야 함**(더 이상 `preserveAspectRatio="none"`/`vectorEffect="non-scaling-stroke"` 트릭 안 씀). 포인트가 많을 때 라벨이 겹치지 않도록 적당히 솎아내는 로직(예: 최대 6~7개만 라벨 표시, 마지막 포인트는 항상 표시) 고려 중이었음.
+6. **날짜 이동 + 목표초과 경고색 + 오늘 체중 간이입력** — 이게 제일 큼:
+   - 대시보드에 `?date=YYYY-MM-DD` 쿼리파라미터 지원 추가(기본값 오늘), 타이틀 옆에 `‹ [date input] (Today) ›` 형태의 작은 클라이언트 컴포넌트(`components/DateNav.tsx` 신설 예정) 배치. 오늘 식단/운동 조회 쿼리를 `gte(todayStart)` 방식에서 선택된 날짜의 하루 범위로 바꿔야 함(패턴은 `/diet/history`에서 이미 씀).
+   - **"등록도 가능하도록 연동"이 핵심 난이도** — `/diet`, `/workout` 페이지가 지금은 무조건 "오늘"만 다루도록 하드코딩돼 있음. 대시보드에서 다른 날짜를 보다가 그 날짜로 기록을 추가하려면 `/diet`·`/workout`도 `?date=` 쿼리를 받아서 조회 범위를 바꾸고, `DietForm`/`WorkoutForm`에 날짜 hidden input을 추가하고, `addDietLogAction`/`addWorkoutLogAction`이 폼에서 받은 date를 (없으면 기존처럼 DB default `now()`) insert에 반영하도록 확장해야 함. 스키마 변경은 필요 없음(diet_logs/workout_logs의 `date` 컬럼은 이미 있음, 그냥 insert 시 넘겨주는 값만 다르게).
+   - 목표 초과 경고색: `ProgressBar`(`components/ProgressBar.tsx`)에 `'red'` 색상 옵션 추가하고, 대시보드에서 각 매크로 `consumed > target`일 때 그 바에 `color='red'` 넘기기. 남은 칼로리 히어로 텍스트도 `remainingCalories < 0`이면 red 계열로.
+   - 오늘 체중 간이입력: 체중 카드에서 최근 30일치 `weightLogs` 중 오늘 날짜 항목이 없으면, 카드 상단에 작은 인라인 입력(`weightKg` 하나 + 버튼)을 보여주고 기존 `addWeightLogAction` 그대로 사용(이 액션은 이미 date를 안 받고 항상 `now()`로 저장하므로 그대로 "오늘 체중"이 됨 — 별도 액션 불필요).
+
+작업 순서는 1→2→3→4→5→6(난이도 순)으로 계획했었음. 매 항목 후 `npx tsc --noEmit` 체크. 이번 라운드는 스키마 변경 없음(006/007/008 마이그레이션까지는 이미 끝난 상태에서 시작).
+
 ## 미완료/보류 항목
 
 1. **배포 안 됨** — 로컬 개발 서버로만 확인 가능. 실서비스로 쓰려면 Vercel 등에 배포 + 환경변수 설정 필요.
 2. **에러 메시지 다국어**: 서버 액션에서 발생하는 에러는 대부분 번역됐지만, Supabase가 직접 반환하는 에러 메시지(`error.message`, 예: 이메일 중복 등)는 Supabase 자체 언어(영어)로 나올 수 있음 — 번역 레이어를 안 씌움.
-3. **체중 그래프**: 대시보드에 placeholder 카드만 있음 — 실제 체중 기록/그래프 기능은 아직 없음(사용자가 "추후"로 명시).
 
 **결정**: Supabase 이메일 확인(Confirm email)은 그대로 유지하기로 함 (2026-08-10, 사용자 확인).
 
