@@ -9,6 +9,8 @@ import { WeightChart } from '@/components/WeightChart';
 import { groupDietLogsByMeal } from '@/lib/mealGroups';
 import { addWeightLogAction } from '@/app/actions';
 import { DateNav } from '@/components/DateNav';
+import { OnboardingBanner } from '@/components/OnboardingBanner';
+import { HelpModal } from '@/components/HelpModal';
 
 function pad(n: number): string {
   return String(n).padStart(2, '0');
@@ -124,14 +126,28 @@ export default async function DashboardPage({
             {t.dashboard.goalLine(goalLabel, goal.bmr)}
           </p>
         </div>
-        <a
-          href="/profile"
-          className="flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-1.5 text-sm text-neutral-600 transition-colors hover:bg-neutral-100 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-900"
-        >
-          <TargetIcon className="h-4 w-4" />
-          {t.dashboard.navGoalTitle}
-        </a>
+        <div className="flex items-center gap-2">
+          <HelpModal
+            buttonLabel={t.dashboard.helpButton}
+            title={t.dashboard.helpTitle}
+            tips={t.dashboard.helpTips}
+            closeLabel={t.dashboard.helpClose}
+          />
+          <a
+            href="/profile"
+            className="flex items-center gap-1.5 rounded-lg border border-neutral-200 px-3 py-1.5 text-sm text-neutral-600 transition-colors hover:bg-neutral-100 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-900"
+          >
+            <TargetIcon className="h-4 w-4" />
+            {t.dashboard.navGoalTitle}
+          </a>
+        </div>
       </div>
+
+      <OnboardingBanner
+        title={t.dashboard.onboardingTitle}
+        description={t.dashboard.onboardingDescription}
+        dismissLabel={t.dashboard.onboardingDismiss}
+      />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         {/* 좌측 컬럼 (60%) */}

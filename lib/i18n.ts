@@ -91,6 +91,20 @@ const dictionary = {
       todayLabel: '오늘',
       goalAchieved: '오늘의 목표 달성!',
       proteinTip: (remainingG: number, packs: number) => `단백질 ${remainingG}g 필요 · 팁: 닭가슴살 ${packs}팩`,
+      onboardingTitle: 'Bulk & Cut 100% 활용 가이드',
+      onboardingDescription:
+        '날짜 이동으로 과거/미래 기록도 관리하고, 최근 먹은 음식은 1초 추가로, 체중은 카드에서 바로 입력하세요.',
+      onboardingDismiss: '닫기',
+      helpButton: '사용법',
+      helpTitle: '사용 방법 & 팁',
+      helpTips: [
+        '상단 날짜 이동(‹ › + 달력)으로 다른 날짜의 식단/운동도 조회·등록할 수 있어요.',
+        '식단 페이지의 번개(⚡) 버튼을 누르면 최근 먹은 음식을 1클릭으로 바로 추가해요.',
+        '운동에서 종목을 선택하면 지난번 무게/횟수가 자동으로 채워져요.',
+        '체중 변화 카드에 오늘 기록이 없으면 바로 입력할 수 있는 칸이 나타나요.',
+        '목표치를 초과하면 프로그레스바와 남은 칼로리가 빨간색으로 바뀌어 알려줘요.'
+      ],
+      helpClose: '확인',
       calories: '칼로리',
       protein: '단백질',
       carb: '탄수화물',
@@ -314,6 +328,20 @@ const dictionary = {
       todayLabel: 'Today',
       goalAchieved: "Today's goal achieved!",
       proteinTip: (remainingG: number, packs: number) => `${remainingG}g protein needed · Tip: ${packs} packs of chicken breast`,
+      onboardingTitle: 'Get the most out of Bulk & Cut',
+      onboardingDescription:
+        'Browse past/future dates, quick-add recent foods in one click, and log weight right from the card.',
+      onboardingDismiss: 'Dismiss',
+      helpButton: 'Help',
+      helpTitle: 'How to use & tips',
+      helpTips: [
+        'Use the date nav (‹ › + calendar) at the top to view or log meals/workouts on other dates.',
+        'Tap a ⚡ chip on the diet page to instantly re-log a recently eaten food.',
+        'Pick an exercise on the workout page and your last weight/reps auto-fill.',
+        "If today's weight isn't logged yet, a quick input appears right in the weight card.",
+        'Bars and remaining calories turn red automatically when you go over target.'
+      ],
+      helpClose: 'Got it',
       calories: 'Calories',
       protein: 'Protein',
       carb: 'Carbs',
